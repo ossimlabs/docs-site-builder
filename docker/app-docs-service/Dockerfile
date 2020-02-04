@@ -1,6 +1,5 @@
-ARG BASE_IMAGE
-FROM ${BASE_IMAGE}
-ENV HOME=/home/omar
+FROM centos
+ENV HOME=/home/httpd
 USER root
 RUN mkdir -p $HOME
 RUN yum --disablerepo=centos* -y install hostname
@@ -9,7 +8,6 @@ RUN yum --disablerepo=centos* -y install gettext
 RUN yum -y install nss_wrapper
 RUN yum clean all
 
-RUN sed '/^omar/d' /etc/passwd > $HOME/passwd-template
 RUN setcap cap_net_bind_service+ep /usr/sbin/httpd
 RUN setcap cap_net_bind_service+ep /usr/sbin/apachectl
 
