@@ -50,17 +50,16 @@ def main():
 
 
 def checkoutRepos(docVars):
-    for repo in docVars["repos"]:
-        cloneCommand = f"git clone --depth=1 {repo}"
-        os.system(cloneCommand)
+    for repo, branch in docVars["repos"].items():
+        os.system(f"git clone {repo} --branch {branch}")
 
 
 def createCustomPaths(docVars):
     customPaths = dict()
 
-    for app_root in [Path(x) for x in docVars["roots"]]:
-        check_mkdocs_config(app_root)
-        customPaths[app_root.parts[0]] = yaml.load(open(app_root / "mkdocs.yml"))
+    for app, root in docVars["apps"].items():
+        check_mkdocs_config(Path(root))
+        customPaths[app] = yaml.load(open(Path(root, "mkdocs.yml")), Loader=yaml.FullLoader)
 
         # docsConfigFile = Path(app, "docsConfig.yml")
         # if exists(docsConfigFile):
@@ -71,15 +70,15 @@ def createCustomPaths(docVars):
 
 def check_mkdocs_config(app_root):
     saved_dir = os.getcwd()
-    os.chdir(app_root)
+    os.chdir(Path(".").absolute() / app_root)
 
-    if not exists(app_root / "docs"):
-        os.mkdir(app_root / "docs")
+    if not exists("docs"):
+        os.mkdir("docs")
 
     if not exists(Path("docs", "index.md")):
         open("index.md", "w+").close()
 
-    if not exists(app_root / "mkdocs.yml"):
+    if not exists("mkdocs.yml"):
         mkdocs_config_file = open("mkdocs.yml", "w+")
         repoName = app_root.parts[-1]
         mkdocs_config_file.write(f"site_name: \"{repoName}\"\nnav:\n- Home: index.md\n")
@@ -92,13 +91,13 @@ def homePage(docVars, customPaths):
     indexFile = open("index.md", 'a')
     indexFile.write("| | | | | |\n|-|-|-|-|-|\n")
 
-    for app in docVars["roots"].map(lambda x: Path(x).parts[0]):
+    for app, root in docVars["apps"].items():
         indexFile.write(f"| **{app}** | ")
 
         for guideName in docVars["guides"]:
             indexFile.write("| ")
 
-            guidePath = getGuidePath(app, customPaths, guideName)
+            guidePath = getGuidePath(app, customPaths, guideName, docVars)
 
             if exists(guidePath):
                 LINK = guidePath.split(".")[0]
@@ -106,7 +105,7 @@ def homePage(docVars, customPaths):
                 indexFile.write(f"[{guideName}]({LINK}/)")
 
         indexFile.write("|  |\n")
-        readmePath = app + "/README.md"
+        readmePath = Path(app, "/README.md")
 
         if exists(readmePath):
             appDescription = findDescriptionLine(readmePath)
@@ -122,8 +121,8 @@ def homePage(docVars, customPaths):
 
 
 def createInstallGuides(docVars, customPaths):
-    for app in docVars["apps"]: #fixme
-        guidePath = getGuidePath(app, customPaths, "install-guide")
+    for app in docVars["apps"]:
+        guidePath = getGuidePath(app, customPaths, "install-guide", docVars)
         injectAppFile(app, customPaths, guidePath)
         if app in customPaths and customPaths[app].get("displayDeployConf"):
             injectDeployConf(app, customPaths, guidePath)
@@ -178,8 +177,8 @@ def mkdocsYML(docVars, customPaths):
     for guideName in docVars["guides"]:
         FLAG = False
 
-        for app in docVars["apps"]: # fixme
-            guidePath = getGuidePath(app, customPaths, guideName)
+        for app in docVars["apps"]:
+            guidePath = getGuidePath(app, customPaths, guideName, docVars)
 
             if exists("docs/" + guidePath):
                 if not FLAG:
@@ -213,11 +212,11 @@ def findDescriptionLine(readmePath):
     return None
 
 
-def getGuidePath(app, customPaths, guideName):
+def getGuidePath(app, customPaths, guideName, docVars):
     if app in customPaths and guideName in customPaths[app]:
-        guidePath = f'{app}/{str(customPaths[app][guideName])}'
+        guidePath = Path(docVars["apps"][app], customPaths[app][guideName])
     else:
-        guidePath = f"{app}/docs/{guideName}/{app}.md"
+        guidePath = Path(docVars['apps'][app], "docs", guideName, f"{app}.md")
 
     return guidePath
 
