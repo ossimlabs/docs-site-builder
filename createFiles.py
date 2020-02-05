@@ -180,7 +180,7 @@ def mkdocsYML(docVars, customPaths):
         for app in docVars["apps"]:
             guidePath = getGuidePath(app, customPaths, guideName, docVars)
 
-            if exists("docs/" + guidePath):
+            if exists("docs" / guidePath):
                 if not FLAG:
                     mkdocsFile.write(f"- {guideName}:\n")
                     FLAG = True
