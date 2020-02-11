@@ -1,1 +1,11 @@
-# AppName - {}
+# {{ project_name }}
+
+{{ project_description }}
+
+## Modules
+
+| | | | | |
+|---|---|---|---|---|
+{% for module_name, module_obj in all_modules.items() -%}
+| {{ module_name }} | [guide]({{ all_guides[module_name] }}) {% if "links" in module_obj %} {% for link_text, url in module_obj["links"].items() %} | [{{ link_text }}]({{ url }}) | {%  endfor %} {% endif %} |
+{% endfor %}
