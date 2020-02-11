@@ -1,0 +1,1 @@
+# geometricIntersectionModel Docs

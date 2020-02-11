@@ -1,73 +1,195 @@
 ---
+project_name: KTIS
+
+working_directory: repos/
+
 guides:
   - install-guide
   - user-guide
 
-# List of repos to be cloned into the "repos" directory with their branch
 repos:
-#  "git@github.com:ossimlabs/mkdocs-site.git": dev
-  "git@bitbucket.org:radiantsolutions/build.git": ktis
-  "git@bitbucket.org:radiantsolutions/microservices.git": master
-  "git@bitbucket.org:radiantsolutions/cesium-ui.git": master
-  "git@bitbucket.org:radiantsolutions/tools.git": master
+  - git_url: git@bitbucket.org:radiantsolutions/microservices.git
+    branch: master
+    modules:
+      - name: missionRepository
+        path: microservices/missionRepository/
 
-# List of apps mapped to their roots, starting with repo name
-apps:
-#  app-name: git-repo/example/folder/my-app/
-  missionRepository: microservices/missionRepository/
-  weatherRepository: microservices/weatherRepository/
-  planningMS: microservices/planningMS/
-  alertPollService: microservices/alertPollService/
-  alertService: microservices/alertService/
-  copDM: microservices/copDM/
-  configService: microservices/configService/
-  ephemerisRepository: microservices/ephemerisRepository/
-  missionModel: microservices/missionModel/
-  assetCommon: microservices/assetCommon/
-  alertModel: microservices/alertModel/
-  accessCommon: microservices/accessCommon/
-  discoveryService: microservices/discoveryService/
-  assetRepository: microservices/assetRepository/
-  opGenCommon: microservices/opGenCommon/
-  geometricIntersectionMS: microservices/geometricIntersectionMS/
-  weatherDM: microservices/weatherDM/
-  workflowModel: microservices/workflowModel/
-  managerMS: microservices/managerMS/
-  geometricIntersectionModel: microservices/geometricIntersectionModel/
-  userRepository: microservices/userRepository/
-  ephemerisMS: microservices/ephemerisMS/
-  targetRepository: microservices/targetRepository/
-  terrainMS: microservices/terrainMS/
-  geometricIntersectionRepository: microservices/geometricIntersectionRepository/
-  targetModel: microservices/targetModel/
-  terrainModel: microservices/terrainModel/
-  userService: microservices/userService/
-  commonMS: microservices/commonMS/
-  planningModel: microservices/planningModel/
-  swaggerCommon: microservices/swaggerCommon/
-  weatherParser: microservices/weatherParser/
-  workflowMS: microservices/workflowMS/
-  assetModel: microservices/assetModel/
-  targetMS: microservices/targetMS/
-  opGenService: microservices/opGenService/
-  ephemerisModel: microservices/ephemerisModel/
-  airborneAccessMS: microservices/airborneAccessMS/
-  alertRepository: microservices/alertRepository/
-  accessMS: microservices/accessMS/
-  assetMS: microservices/assetMS/
-  userModel: microservices/userModel/
-  opGenModel: microservices/opGenModel/
-  weatherModel: microservices/weatherModel/
-  geometryIngestService: microservices/geometryIngestService/
-  weatherMS: microservices/weatherMS/
-  microserviceDBUtils: microservices/microserviceDBUtils/
-  planningRepository: microservices/planningRepository/
-  missionMS: microservices/missionMS/
-  ephemerisDM: microservices/ephemerisDM/
-  initDatabase: microservices/initDatabase/
-  accessModel: microservices/accessModel/
-  webstats: tools/utilities/webstats/
-  czmlwriter: cesium-ui/czmlwriter/
-  cesium-client: cesium-ui/cesium-client/
-  csv2czml: cesium-ui/csv2czml/
-  cesium-server: cesium-ui/cesium-server/
+      - name: weatherRepository
+        path: microservices/weatherRepository/
+
+      - name: planningMS
+        path: microservices/planningMS/
+
+      - name: alertPollService
+        path: microservices/alertPollService/
+
+      - name: alertService
+        path: microservices/alertService/
+
+      - name: copDM
+        path: microservices/copDM/
+
+      - name: configService
+        path: microservices/configService/
+
+      - name: ephemerisRepository
+        path: microservices/ephemerisRepository/
+
+      - name: missionModel
+        path: microservices/missionModel/
+
+      - name: assetCommon
+        path: microservices/assetCommon/
+
+      - name: alertModel
+        path: microservices/alertModel/
+
+      - name: accessCommon
+        path: microservices/accessCommon/
+
+      - name: discoveryService
+        path: microservices/discoveryService/
+
+      - name: assetRepository
+        path: microservices/assetRepository/
+
+      - name: opGenCommon
+        path: microservices/opGenCommon/
+
+      - name: geometricIntersectionMS
+        path: microservices/geometricIntersectionMS/
+
+      - name: weatherDM
+        path: microservices/weatherDM/
+
+      - name: workflowModel
+        path: microservices/workflowModel/
+
+      - name: managerMS
+        path: microservices/managerMS/
+
+      - name: geometricIntersectionModel
+        path: microservices/geometricIntersectionModel/
+
+      - name: userRepository
+        path: microservices/userRepository/
+
+      - name: ephemerisMS
+        path: microservices/ephemerisMS/
+
+      - name: targetRepository
+        path: microservices/targetRepository/
+
+      - name: terrainMS
+        path: microservices/terrainMS/
+
+      - name: geometricIntersectionRepository
+        path: microservices/geometricIntersectionRepository/
+
+      - name: targetModel
+        path: microservices/targetModel/
+
+      - name: terrainModel
+        path: microservices/terrainModel/
+
+      - name: userService
+        path: microservices/userService/
+
+      - name: commonMS
+        path: microservices/commonMS/
+
+      - name: planningModel
+        path: microservices/planningModel/
+
+      - name: swaggerCommon
+        path: microservices/swaggerCommon/
+
+      - name: weatherParser
+        path: microservices/weatherParser/
+
+      - name: workflowMS
+        path: microservices/workflowMS/
+
+      - name: assetModel
+        path: microservices/assetModel/
+
+      - name: targetMS
+        path: microservices/targetMS/
+
+      - name: opGenService
+        path: microservices/opGenService/
+
+      - name: ephemerisModel
+        path: microservices/ephemerisModel/
+
+      - name: airborneAccessMS
+        path: microservices/airborneAccessMS/
+
+      - name: alertRepository
+        path: microservices/alertRepository/
+
+      - name: accessMS
+        path: microservices/accessMS/
+
+      - name: assetMS
+        path: microservices/assetMS/
+
+      - name: userModel
+        path: microservices/userModel/
+
+      - name: opGenModel
+        path: microservices/opGenModel/
+
+      - name: weatherModel
+        path: microservices/weatherModel/
+
+      - name: geometryIngestService
+        path: microservices/geometryIngestService/
+
+      - name: weatherMS
+        path: microservices/weatherMS/
+
+      - name: microserviceDBUtils
+        path: microservices/microserviceDBUtils/
+
+      - name: planningRepository
+        path: microservices/planningRepository/
+
+      - name: missionMS
+        path: microservices/missionMS/
+
+      - name: ephemerisDM
+        path: microservices/ephemerisDM/
+
+      - name: initDatabase
+        path: microservices/initDatabase/
+
+      - name: accessModel
+        path: microservices/accessModel/
+
+  - git_url: git@bitbucket.org:radiantsolutions/build.git
+    branch: ktis
+    modules:
+      - name: build repo
+        path: build/
+
+  - git_url: git@bitbucket.org:radiantsolutions/cesium-ui.git
+    branch: master
+    modules:
+      - name: czmlwriter
+        path: cesium-ui/czmlwriter/
+
+      - name: cesium-client
+        path: cesium-ui/cesium-client/
+
+      - name: csv2czml
+        path: cesium-ui/csv2czml/
+
+      - name: cesium-server
+        path: cesium-ui/cesium-server/
+
+  - git_url: git@bitbucket.org:radiantsolutions/tools.git
+    branch: master
+    modules:
+      - name: webstats
+        path: tools/utilities/webstats/

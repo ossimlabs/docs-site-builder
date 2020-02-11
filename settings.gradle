@@ -1,3 +1,0 @@
-include 'omar-docs-app'
-
-project(':omar-docs-app').projectDir = "${rootProject.projectDir}/apps/omar-docs-app" as File
