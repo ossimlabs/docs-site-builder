@@ -1,38 +1,16 @@
-# Generic Mkdocs Site Builder
-
-This tool uses one project_vars.yml file to specify all the notable modules in a multi-repository project to aggregate 
-doc pages into one docsite. This site, once deployed in your cluster, can support users and developers of the project.
-
-## Project Vars
-
-The master config for detecting documentation files. In the yaml, you specify where to look and what to include for your
-master docsite. Documents are concatenated to produce guides, one per module.
-
-## Getting Started
-
-Update the `repos` tag to capture the repositories that contain the relevant modules. Those module paths are used to 
-discover and aggregate documentation according to which module the document is under.
-
-The `repos` captures the hierarchy of documentation, some number of repos each containing some number of modules. A 
-module is just a named path, it can be any valid path inside the repository. Repos takes a list of dictionaries. Each 
-repo dictionary needs git_url, branch, and modules. The modules key holds a list of module dictionaries. Each module 
-dictionary holds a name, path, and links (the links key is optional). Links takes a dictionary of link text to link url.
-
-## Example
-
-The following is an example which builds a docsite for a project named 'KTIS'. It contains 4 repositories with the
-microservices repository containing around 50 modules. Usually, the specified modules are microservices.
-
-```yaml
 ---
+# Used as a title for the docs page
 project_name: KTIS
 
+# Put under the title for the docs page
 project_description: "
 KTIS does good things.
 "
 
+# Used as a staging area for cloning repositories and creating guides
 working_directory: repos/
 
+# Where to check, in each module root, for documentation files
 docs_locations:
   - readme
   - readme.md
@@ -42,6 +20,18 @@ docs_locations:
   - Jenkinsfile
   - docs/
 
+# The hierarchy of documentation, some number of repos each containing some number of modules.
+#
+# EXAMPLE
+#
+# repos:
+#  - git_url: git@bitbucket.org:radiantsolutions/microservices.git
+#    branch: ktis
+#    modules:
+#      - name: accessMS
+#        path: microservices/accessMS/
+#        links:
+#          swagger: "https://access.ktis.radiantblue.local/swagger-ui.html"
 repos:
   - git_url: git@bitbucket.org:radiantsolutions/microservices.git
     branch: ktis
@@ -230,4 +220,3 @@ repos:
     modules:
       - name: webstats
         path: tools/utilities/webstats/
-```
