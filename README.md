@@ -18,6 +18,12 @@ module is just a named path, it can be any valid path inside the repository. Rep
 repo dictionary needs git_url, branch, and modules. The modules key holds a list of module dictionaries. Each module 
 dictionary holds a name, path, and links (the links key is optional). Links takes a dictionary of link text to link url.
 
+## Running
+
+Once the project vars have been set, you can run `python3 tasks/clone_repos.py` and then `python3 generate.py` to pull 
+the repositories and generate the docsite. Since you have python installed you can simply run `cd site/ && python3 -m 
+http.server` to serve the site locally.
+
 ## Example
 
 The following is an example which builds a docsite for a project named 'KTIS'. It contains 4 repositories with the

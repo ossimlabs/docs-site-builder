@@ -1,6 +1,6 @@
 import yaml
 import os
-from tasks.lib import *
+from lib import *
 
 
 def main(doc_vars_file):
