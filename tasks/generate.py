@@ -1,8 +1,10 @@
-import os
+from os import getcwd, listdir, system
+from os.path import isdir, isfile
 import yaml
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 from tasks.lib import *
+import mkdocs.__main__
 
 
 def main():
@@ -28,7 +30,7 @@ def load_vars():
 
 
 def check_path():
-    if not os.getcwd().endswith("mkdocs-site"):
+    if not getcwd().endswith("mkdocs-site"):
         exit_msg("Run this file from the project root, mkdocs-site/", 1)
 
 
@@ -54,18 +56,15 @@ def make_generated_guides(project_vars):
     guide_files = {}
 
     for module_name, module_obj in project_vars["all_modules"].items():
-        guide = f"# {module_name} Docs"
+        guide = f"# {module_name} Docs\n"
         for doc_location_local in project_vars["docs_locations"]:
             doc_location = Path(project_vars["working_directory"], module_obj["path"], doc_location_local)
             if exists(doc_location):
-                if os.path.isdir(doc_location):
-                    contained_files = os.listdir(doc_location)
-                    project_vars["docs_locations"] += filter(os.path.isfile, contained_files)
+                if isdir(doc_location):
+                    for file in filter(isfile, listdir(doc_location)):
+                        guide += read_docfile(Path(doc_location, file), Path(doc_location_local, file))
                 else:
-                    guide += f"## {doc_location_local}\n\n"
-                    docfile = open(doc_location, "r")
-                    guide += docfile.read()
-                    docfile.close()
+                    guide += read_docfile(doc_location, doc_location_local)
 
         guide_filename = f"{module_name.replace(' ', '-')}-guide.md"
         guide_files[module_name] = guide_filename
@@ -76,9 +75,19 @@ def make_generated_guides(project_vars):
     return guide_files
 
 
+def read_docfile(doc_location, doc_location_local):
+    subsection = f"## {doc_location_local}\n\n"
+    docfile = open(doc_location, "r")
+    if str(doc_location).endswith(".md"):
+        subsection += docfile.read() + "\n\n"
+    else:
+        subsection += f"```\n{docfile.read()}\n```\n"
+    docfile.close()
+    return subsection
+
+
 def create_mkdocs_config(project_vars, generated_guides):
-    all_pages = [{"Home": project_vars["mainpage_filename"]}]
-    all_pages.append({"Guides": generated_guides})
+    all_pages = [{"Home": project_vars["mainpage_filename"]}, {"Guides": generated_guides}]
 
     config = {
         "site_name": project_vars["project_name"],
@@ -92,7 +101,8 @@ def create_mkdocs_config(project_vars, generated_guides):
 
 
 def build():
-    os.system("mkdocs build")
+    sys.argv = ["mkdocs", "build"]
+    mkdocs.__main__.cli()
 
 
 if __name__ == "__main__":

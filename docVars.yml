@@ -15,14 +15,18 @@ default_mkdoc_config:
     - Home: index.md
 
 docs_locations:
+  - readme
+  - readme.md
   - Dockerfile
-  - Readme
-  - Readme.md
+  - docker/
+  - docker/build-image/
+  - Jenkinsfile
   - docs/
+
 
 repos:
   - git_url: git@bitbucket.org:radiantsolutions/microservices.git
-    branch: master
+    branch: ktis
     modules:
       - name: missionRepository
         path: microservices/missionRepository/
