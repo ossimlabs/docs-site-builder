@@ -20,9 +20,17 @@ dictionary holds a name, path, and links (the links key is optional). Links take
 
 ## Running
 
-Once the project vars have been set, you can run `python3 tasks/clone_repos.py` and then `python3 generate.py` to pull 
+Once the project vars have been set and you have installed the prerequisites, you can run `python3 tasks/clone_repos.py` and then `python3 generate.py` to pull 
 the repositories and generate the docsite. Since you have python installed you can simply run `cd site/ && python3 -m 
 http.server` to serve the site locally.
+
+```bash
+pip3 -r requirements.txt
+python3 tasks/clone_repos.py
+python3 generate.py
+cd site
+python3 -m http.server
+```
 
 ## Example
 
