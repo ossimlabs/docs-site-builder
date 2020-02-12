@@ -1,1 +1,0 @@
-# initDatabase Docs

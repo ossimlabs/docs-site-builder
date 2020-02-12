@@ -1,1 +1,0 @@
-# ephemerisModel Docs

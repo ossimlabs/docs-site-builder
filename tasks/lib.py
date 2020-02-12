@@ -6,7 +6,7 @@ import sys
 def parse_args():
     parser = argparse.ArgumentParser(description='Process some integers.')
     parser.add_argument('--config', '-c', metavar='filename', type=str, nargs='?',
-                        default='docVars.yml',
+                        default='project_vars.yml',
                         help='A config file containing site_root and repos.')
 
     args = parser.parse_args()

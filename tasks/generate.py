@@ -36,7 +36,7 @@ def check_path():
 
 def create_main_page(project_vars, guide_files):
     env = Environment(
-        loader=FileSystemLoader(project_vars["template_files"]),
+        loader=FileSystemLoader("template_files"),
         autoescape=select_autoescape(['html', 'xml'])
     )
 

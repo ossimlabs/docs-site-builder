@@ -1,19 +1,16 @@
 ---
+# Used as a title for the docs page
 project_name: KTIS
 
+# Put under the title for the docs page
 project_description: "
 KTIS does good things.
 "
 
+# Used as a staging area for cloning repositories and creating guides
 working_directory: repos/
-template_files: template_files/
 
-default_mkdoc_config:
-  site_name: ""
-  docs_dir: docs/
-  nav:
-    - Home: index.md
-
+# Where to check, in each module root, for documentation files
 docs_locations:
   - readme
   - readme.md
@@ -23,11 +20,27 @@ docs_locations:
   - Jenkinsfile
   - docs/
 
-
+# The hierarchy of documentation, some number of repos each containing some number of modules.
+#
+# EXAMPLE
+#
+# repos:
+#  - git_url: git@bitbucket.org:radiantsolutions/microservices.git
+#    branch: ktis
+#    modules:
+#      - name: accessMS
+#        path: microservices/accessMS/
+#        links:
+#          swagger: "https://access.ktis.radiantblue.local/swagger-ui.html"
 repos:
   - git_url: git@bitbucket.org:radiantsolutions/microservices.git
     branch: ktis
     modules:
+      - name: accessMS
+        path: microservices/accessMS/
+        links:
+          swagger: "https://access.ktis.radiantblue.local/swagger-ui.html"
+
       - name: missionRepository
         path: microservices/missionRepository/
 
@@ -144,11 +157,6 @@ repos:
 
       - name: alertRepository
         path: microservices/alertRepository/
-
-      - name: accessMS
-        path: microservices/accessMS/
-        links:
-          swagger: "https://access.ktis.radiantblue.local/swagger-ui.html"
 
       - name: assetMS
         path: microservices/assetMS/
