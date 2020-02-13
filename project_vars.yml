@@ -30,6 +30,7 @@ docs_locations:
 #    modules:
 #      - name: accessMS
 #        path: microservices/accessMS/
+#        description: "This is such a tool, like who even can live without it? I love it. I love it all the time. Please"
 #        links:
 #          swagger: "https://access.ktis.radiantblue.local/swagger-ui.html"
 repos:
@@ -38,6 +39,7 @@ repos:
     modules:
       - name: accessMS
         path: microservices/accessMS/
+        description: "This is such a tool, like who even can live without it? I love it. I love it all the time. Please"
         links:
           swagger: "https://access.ktis.radiantblue.local/swagger-ui.html"
 

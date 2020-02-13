@@ -81,3 +81,115 @@ node( "${ BUILD_NODE }" ) {
             step([ $class: 'WsCleanup' ])
     }
 }
+
+
+properties([
+  buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '3', daysToKeepStr: '', numToKeepStr: '20')),
+  disableConcurrentBuilds(),
+  parameters([
+      string(name: 'IMAGE_TAG', defaultValue: 'dev', description: 'Docker image tag used when publishing'),
+      text(name: 'ADHOC_PROJECT_YAML', defaultValue: '', description: 'Override the project vars used to generate documentation')
+  ])
+])
+
+
+
+properties([
+  buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '3', daysToKeepStr: '', numToKeepStr: '20')),
+  disableConcurrentBuilds(),
+  parameters([
+      string(defaultValue: 'nexus-docker-private-hosted.ktis.radiantblue.local', description: 'The docker repo to use', name: 'DOCKER_REGISTRY', trim: false),
+      string(defaultValue: 'ktis-javadoc', description: 'The branch to use', name: 'GIT_BRANCH', trim: false),
+      string(defaultValue: 'javadoc.tgz', description: 'artifact ', name: 'WEB_ARTIFACT', trim: false)
+  ]),
+  pipelineTriggers([
+    pollSCM('* * * * *')
+  ])
+])
+
+podTemplate(
+  containers: [
+    containerTemplate(
+      name: 'git',
+      image: 'alpine/git:latest',
+      ttyEnabled: true,
+      command: 'cat',
+      envVars: [
+          envVar(key: 'HOME', value: '/root')
+        ]
+    ),
+    containerTemplate(
+      name: 'docker',
+      image: 'docker:latest',
+      ttyEnabled: true,
+      command: 'cat',
+      privileged: true
+    ),
+    containerTemplate(
+      envVars: [
+        envVar(key: 'JENKINS_CERT_FILE', value: '/secrets/cert.pem')
+      ],
+      image: "${DOCKER_REGISTRY}/jnlp-agent:latest",
+      name: 'jnlp', // using Jenkins agent image
+      ttyEnabled: true,
+    ),
+    containerTemplate(
+        image: "${DOCKER_REGISTRY}/ktis-builder:2.0",
+        name: 'builder',
+        command: 'cat',
+        ttyEnabled: true
+    )
+  ],
+  volumes: [
+    secretVolume(
+      mountPath: '/secrets',
+      secretName: 'ca-cert'
+    ),
+    hostPathVolume(
+      hostPath: '/var/run/docker.sock',
+      mountPath: '/var/run/docker.sock'
+    ),
+    secretVolume(
+      mountPath: '/bitbucket_secret',
+      secretName: 'ktis-bitbucket-ssh-private-key',
+      defaultMode: '384'
+    )
+  ]
+) {
+
+  node(POD_LABEL) {
+    stage('Clone') {
+      container('git') {
+        sh '''
+          mkdir ~/.ssh
+          cp -H /bitbucket_secret/ssh-privatekey ~/.ssh/id_rsa
+          echo -e "Host *\n    StrictHostKeyChecking=no" > ~/.ssh/config
+          git clone git@bitbucket.org:radiantsolutions/build.git --single-branch --branch ${GIT_BRANCH}
+          cd build
+          cat clone.sh
+          sh ./clone.sh --branch ${GIT_BRANCH}
+        '''
+      }
+    }
+
+    stage('Build') {
+      container('builder') {
+        sh '''
+          cd build
+          cd microservices
+          git branch -vvv
+          cd ..
+          ./gradlew --no-daemon javadoc
+
+          for i in $(find . -wholename "*build/docs/javadoc" -type d)
+          do
+              mkdir -p ../www/${i} && cp -r ${i} ../www/${i}/..
+          done
+          cd ..
+          tar czf ${WEB_ARTIFACT} www/
+          '''
+        archiveArtifacts WEB_ARTIFACT
+      }
+    }
+  }
+}

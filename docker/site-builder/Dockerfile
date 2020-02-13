@@ -1,6 +1,8 @@
-ARG PROJECT_ROOT
 FROM python
-EXPOSE 80
-VOLUME "${PROJECT_ROOT}/mkdocs-site"
-RUN pip install mkdocs
-#ENTRYPOINT "python3 ${PROJECT_ROOT}/mkdocs-site/createFiles.py"
+RUN git clone https://github.com/ossimlabs/mkdocs-site.git &&\
+    pip3 install -r /mkdocs-site/requirements.txt &&\
+    mkdir /out/
+CMD cd /mkdocs-site &&\
+    python3 tasks/clone_repos.py &&\
+    python3 tasks/generate.py &&\
+    mv site /out/site.tgz

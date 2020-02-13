@@ -1,7 +1,0 @@
-[rhel-deps]
-name=RedHat missing rpm
-baseurl=http://172.31.3.203/rhel-deps/
-enabled=1
-gpgcheck=0
-metadata_expire=5m
-protect=1

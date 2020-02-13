@@ -4,6 +4,7 @@ from lib import *
 
 
 def main(doc_vars_file):
+    print('\n')
     doc_vars = yaml.load(open(doc_vars_file, 'r'), Loader=yaml.FullLoader)
 
     all_git_urls = [(x["git_url"], x["branch"]) for x in doc_vars["repos"]]
@@ -21,11 +22,14 @@ def main(doc_vars_file):
 
     if not (exists(clone_location)):
         os.mkdir(clone_location)
+    elif len(os.listdir(clone_location)) > 0:
+        print("This folder is not empty! The git clone command may complain.")
 
     os.chdir(clone_location)
-    print(f"Cloning repos in directory {os.getcwd()}...")
+    print(f"Attempting to clone repositories into {os.getcwd()}...\n\n")
 
     for url, branch in all_git_urls:
+        print("Git: ", end='')
         os.system(f"git clone {url} --branch {branch}")
 
 

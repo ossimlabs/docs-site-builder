@@ -91,6 +91,7 @@ def create_mkdocs_config(project_vars, generated_guides):
 
     config = {
         "site_name": project_vars["project_name"],
+        "theme": "readthedocs",
         "docs_dir": project_vars["working_directory"],
         "nav": all_pages
     }

@@ -16,9 +16,11 @@ discover and aggregate documentation according to which module the document is u
 The `repos` captures the hierarchy of documentation, some number of repos each containing some number of modules. A 
 module is just a named path, it can be any valid path inside the repository. Repos takes a list of dictionaries. Each 
 repo dictionary needs git_url, branch, and modules. The modules key holds a list of module dictionaries. Each module 
-dictionary holds a name, path, and links (the links key is optional). Links takes a dictionary of link text to link url.
+dictionary holds a name, path, links, and description (links and description are optional). Links takes a dictionary of 
+link text to link url. The description is a string
 
-## Running
+
+## Running Locally
 
 Once the project vars have been set and you have installed the prerequisites, you can run `python3 tasks/clone_repos.py` and then `python3 generate.py` to pull 
 the repositories and generate the docsite. Since you have python installed you can simply run `cd site/ && python3 -m 
@@ -31,6 +33,10 @@ python3 generate.py
 cd site
 python3 -m http.server
 ```
+
+## Running in Docker
+
+
 
 ## Example
 
@@ -62,6 +68,7 @@ repos:
     modules:
       - name: accessMS
         path: microservices/accessMS/
+        description: "AccessMS does blah with blah for blah."
         links:
           swagger: "https://access.ktis.radiantblue.local/swagger-ui.html"
 
