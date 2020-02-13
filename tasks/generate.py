@@ -8,8 +8,8 @@ import mkdocs.__main__
 
 
 def main():
-    check_path()
     project_vars = load_vars()
+    check_environment(project_vars)
     generated_guides = make_generated_guides(project_vars)
     create_main_page(project_vars, generated_guides)
     create_mkdocs_config(project_vars, generated_guides)
@@ -29,10 +29,16 @@ def load_vars():
     return project_vars
 
 
-def check_path():
+def check_environment(project_vars):
     if not getcwd().endswith("mkdocs-site"):
         exit_msg("Run this file from the project root, mkdocs-site/", 1)
 
+    if not exists(project_vars["working_directory"]):
+        exit_msg("Working directory not found... Have you run clone_repos.py?", 1)
+
+    if len(listdir(project_vars["working_directory"])) == 0:
+        exit_msg("Working directory is empty... Have you run clone_repos.py?", 1)
+        
 
 def create_main_page(project_vars, guide_files):
     env = Environment(

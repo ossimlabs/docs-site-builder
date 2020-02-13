@@ -36,7 +36,23 @@ python3 -m http.server
 
 ## Running in Docker
 
+Also included in this project are two Dockerfiles which create docker containers to do all the lifting. The first, 
+site-builder runs the two python tasks, clone-repos and generate. The second, docs-service, serves the generated site 
+directory.
 
+From the root of this project, you could run:
+
+```bash
+docker build docker/site-builder -t site-builder
+
+mkdir out
+docker run -it --rm -v $PWD/project_vars.yml:/mkdocs-site/project_vars.yml -v $PWD/out:/out site-builder
+
+docker build docker/docs-service -t docs-service
+
+mv out/site/ docker/docs-service/site/
+docker build docker/docs-service -t docs-service
+```
 
 ## Example
 
