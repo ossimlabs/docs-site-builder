@@ -46,7 +46,7 @@ From the root of this project, you could run:
 docker build docker/site-builder -t site-builder
 
 mkdir out
-docker run -it --rm -v $PWD/ktis_vars.yml:/mkdocs-site/project_vars.yml -v $PWD/out/:/out -v ~/.ssh:/root/.ssh/ site-builder
+docker run -it --rm -v $PWD/my_vars.yml:/mkdocs-site/project_vars.yml -v $PWD/out/:/out -v ~/.ssh:/root/.ssh/ site-builder
 
 mv out/site/ docker/docs-service/site/
 docker build docker/docs-service -t docs-service
@@ -54,9 +54,9 @@ docker build docker/docs-service -t docs-service
 docker run -d -p 8080:80 docs-service
 ```
 
-And your docsite should be available at [127.0.0.1:8080/](127.0.0.1:8080/).
+And your docsite should be available at [127.0.0.1:8080/](127.0.0.1:8080/)
 
-## Example
+## Example Project vas
 
 The following is an example which builds a docsite for a project named 'KTIS'. It contains 4 repositories with the
 microservices repository containing around 50 modules. Usually, the specified modules are microservices.
