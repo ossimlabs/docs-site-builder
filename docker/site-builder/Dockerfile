@@ -5,4 +5,4 @@ RUN git clone https://github.com/ossimlabs/mkdocs-site.git &&\
 CMD cd /mkdocs-site &&\
     python3 tasks/clone_repos.py &&\
     python3 tasks/generate.py &&\
-    mv site /out/site.tgz
+    mv site /out/site

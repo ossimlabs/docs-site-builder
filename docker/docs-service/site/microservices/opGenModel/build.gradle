@@ -1,0 +1,17 @@
+description = 'OpGenModel'
+
+dependencies {
+	if (kelly_projects) {
+		api project(':czmlwriter')
+	}
+	else {
+		api 'com.maxar.cesium:czmlwriter:0.0.1-RELEASE-a2f3cee'
+	}
+
+	implementation "joda-time:joda-time:$jodatime_version"
+
+	implementation 'io.swagger:swagger-annotations:1.5.20'
+
+	compileOnly "org.projectlombok:lombok:$lombok_version"
+	annotationProcessor "org.projectlombok:lombok:$lombok_version"
+}

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:c="http://www.springframework.org/schema/c"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xmlns:rbf="http://www.radiantblue.com/schema/rb/foundation"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-3.1.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util-3.1.xsd">
+
+	<context:property-placeholder />
+
+	<!-- Ingesters -->
+	<bean id="TleFileIngester"
+		class="com.maxar.ephemeris.dm.dataingest.EphemerisFileIngester">
+		<property name="parser">
+			<bean id="TleParser"
+				class="com.maxar.ephemeris.dm.dataingest.SampleTleParser">
+			</bean>
+		</property>
+		<property name="feedId" value="TLEFile" />
+		<property name="feedName" value="TLEFile" />
+		<property name="inDirectory" value="/blueground/data/tle" />
+		<property name="successDir" value="/blueground/data/tle/archive" />
+		<property name="errorDir" value="/blueground/data/tle/reject" />
+		<property name="filePattern" value=".*tle" />
+		<property name="fileSuffix" value="tle" />
+	</bean>
+	
+	<bean id="StateVectorFileIngester"
+		class="com.maxar.ephemeris.dm.dataingest.EphemerisFileIngester">
+		<property name="parser">
+			<bean id="StateVectorParser"
+				class="com.maxar.ephemeris.dm.dataingest.SampleStateVectorParser">
+			</bean>
+		</property>
+		<property name="feedId" value="StateVectorFile" />
+		<property name="feedName" value="StateVectorFile" />
+		<property name="inDirectory" value="/blueground/data/statevector" />
+		<property name="successDir" value="/blueground/data/statevector/archive" />
+		<property name="errorDir" value="/blueground/data/statevector/reject" />
+		<property name="filePattern" value=".*svs" />
+		<property name="fileSuffix" value="svs" />
+	</bean>
+	
+	<bean id="VcmFileIngester"
+		class="com.maxar.ephemeris.dm.dataingest.EphemerisFileIngester">
+		<property name="parser">
+			<bean id="VcmParser"
+				class="com.maxar.ephemeris.dm.dataingest.VcmParser">
+			</bean>
+		</property>
+		<property name="feedId" value="VCMFile" />
+		<property name="feedName" value="VCMFile" />
+		<property name="inDirectory" value="/blueground/data/vcm" />
+		<property name="successDir" value="/blueground/data/vcm/archive" />
+		<property name="errorDir" value="/blueground/data/vcm/reject" />
+		<property name="filePattern" value=".*vcm" />
+		<property name="fileSuffix" value="vcm" />
+	</bean>
+</beans>

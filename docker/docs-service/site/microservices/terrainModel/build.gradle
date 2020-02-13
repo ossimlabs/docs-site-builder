@@ -1,0 +1,9 @@
+description = 'TerrainModel'
+
+dependencies {
+	implementation 'io.swagger:swagger-annotations:1.5.20'
+    implementation "joda-time:joda-time:$jodatime_version"
+    
+    compileOnly "org.projectlombok:lombok:$lombok_version"
+    annotationProcessor "org.projectlombok:lombok:$lombok_version"
+}

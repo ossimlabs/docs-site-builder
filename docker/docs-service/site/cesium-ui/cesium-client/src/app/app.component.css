@@ -1,0 +1,57 @@
+.map-layer-view {
+    height: 80vh;
+    display: flex;
+    position: relative;
+    top: 25px;
+}
+
+.timeline-view {
+    height: 16vh;
+    margin-top: 25px;
+}
+
+.layerTree-view {
+    height: 100%;
+    width: 100%;
+    overflow: auto;
+}
+
+.tree-wrapper {
+    height: 100%;
+    width: 30vh;
+    position: relative;
+    z-index: 1;
+    max-width: calc(100% - 10px);
+}
+
+.map-view {
+    height: 100%;
+}
+
+.drag-handle {
+    position: absolute;
+    background: #f1f1f1;
+}
+
+.drag-handle.right {
+    width: 4px;
+    height: 100%;
+    cursor: ew-resize;
+}
+
+.drag-arrow-handle {
+    background: #f1f1f1;
+    position: absolute;
+    height: 20px;
+    width: 10px;
+    top: calc(50% - 10px);
+    border-radius: 0px 4px 4px 0px;
+    cursor: pointer;
+}
+
+.drag-arrow-icon {
+    transform: scaleX(0.5) scaleY(1.3);
+    position: relative;
+    left: -7px;
+    top: -2px;
+}

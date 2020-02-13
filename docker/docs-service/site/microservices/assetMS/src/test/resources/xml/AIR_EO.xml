@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:c="http://www.springframework.org/schema/c"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:rbf="http://www.radiantblue.com/schema/rb/foundation"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-3.1.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util-3.1.xsd
+        http://www.radiantblue.com/schema/rb/foundation
+        http://www.radiantblue.com/schema/rb/foundation/rb-foundation-1.0.xsd">
+
+	<!-- maneuver rates -->
+	<bean id="AircraftManeuver" class="com.radiantblue.analytics.core.maneuver.r3.RateLimits"
+		c:xRate="3.0" c:yRate="3.0" c:zRate="3.0" />
+
+	<bean id="AircraftStateVectorProvider"
+		class="com.maxar.asset.common.aircraft.AircraftTrackStateVectorProvider" />
+
+	<bean id="AIR_EO" class="com.radiantblue.analytics.isr.core.model.asset.Aircraft" scope="prototype">
+		<property name="name" value="AIR_EO" />
+		<property name="id" value="1" />
+
+		<property name="maneuverModel">
+			<bean class="com.radiantblue.analytics.gnc.maneuver.EigenAxisManeuverModel">
+				<property name="rateSelector">
+					<bean class="com.radiantblue.analytics.core.maneuver.r3.EllipsoidalEigenAxisRateSelector">
+						<property name="javLimits">
+							<bean class="com.radiantblue.analytics.core.maneuver.r3.JAVLimits"
+								c:velocityLimits-ref="AircraftManeuver"
+								c:accelerationLimits-ref="AircraftManeuver" c:jerkLimits-ref="AircraftManeuver" />
+						</property>
+					</bean>
+				</property>
+			</bean>
+		</property>
+
+		<property name="interpolator">
+			<bean class="com.radiantblue.analytics.mechanics.statevectors.RawStateVectorProviderInterpolator" />
+		</property>
+
+		<property name="payloads">
+			<list>
+				<bean class="com.radiantblue.analytics.isr.core.model.payload.Payload">
+					<property name="name" value="AIR_EO_Payload" />
+
+					<property name="sensors">
+						<list>
+							<bean id="AIR_EO_ScanningSensor" class="com.radiantblue.analytics.isr.eo.scanner.EOScanner"
+								p:name="AIR_EO_ScanningSensor">
+								<property name="pixelDefinition">
+									<bean class="com.radiantblue.analytics.isr.eo.SquarePixel">
+										<property name="pitch">
+											<rbf:length units="microns" value="8" />
+										</property>
+									</bean>
+								</property>
+
+								<property name="numPixels" value="36800" />
+
+								<property name="focalLength">
+									<rbf:length units="in" value="525.44" />
+								</property>
+
+								<property name="niirsCalculator">
+									<bean class="com.radiantblue.analytics.isr.eo.SimpleNiirsCalculator">
+										<property name="a" value="9.32" />
+										<property name="b" value="-3.32" />
+									</bean>
+								</property>
+
+								<property name="displayFOR">
+									<bean id="ButterflyFootprint" class="com.radiantblue.analytics.aerospace.geometry.footprint.ButterflyFOR">
+										<property name="grazeRange">
+											<rbf:angular_range units="deg" min="5" max="80" />
+										</property>
+										<property name="grazeStep">
+											<rbf:angle units="deg" value="10" />
+										</property>
+
+										<property name="squintRange">
+											<rbf:angular_range units="deg" min="30"
+												max="150" />
+										</property>
+
+										<property name="squintStep">
+											<rbf:angle units="deg" value="10" />
+										</property>
+
+										<property name="minCrosstrackRange">
+											<rbf:length units="km" value="0" />
+										</property>
+
+										<property name="fovSide" value="BOTH" />
+									</bean>
+								</property>
+
+								<property name="modes">
+									<list>
+										<bean id="AIR_EO_ScanMode" class="com.radiantblue.analytics.isr.eo.scanner.EOScanningMode"
+											p:name="AIR_EO_ScanMode">
+
+											<property name="bitsPerPixel" value="4" />
+
+											<property name="lineRateStrategy">
+												<bean class="com.radiantblue.analytics.isr.eo.scanner.ConstantLineRateStrategy">
+													<property name="linesPerSecond" value="24000" />
+												</bean>
+											</property>
+
+											<property name="scanStrategy">
+												<bean class="com.radiantblue.analytics.isr.eo.scanner.DefaultEOScanCalculator">
+													<property name="edgePad">
+														<rbf:length units="km" value="1" />
+													</property>
+												</bean>
+											</property>
+
+											<property name="attitudeCalculator">
+												<bean
+													class="com.radiantblue.analytics.isr.eo.attitude.FixedScanDirectionAttitudeSelector">
+													<property name="scanAzimuthOffNorthCW">
+														<rbf:angle units="deg" value="90" />
+													</property>
+												</bean>
+											</property>
+
+											<property name="scanDirectionStrategy">
+												<bean class="com.radiantblue.analytics.isr.eo.scanner.SerpentineScanStrategy" />
+											</property>
+										</bean>
+									</list>
+								</property>
+							</bean>
+						</list>
+					</property>
+
+					<property name="accessConstraints">
+						<list>
+							<!-- SLANT RANGE CONSTRAINT -->
+							<bean class="com.radiantblue.analytics.aerospace.geometry.constraint.SlantRangeConstraint">
+								<property name="range">
+									<rbf:length_range units="nmi" min="0" max="250" />
+								</property>
+							</bean>
+
+							<bean class="com.radiantblue.analytics.aerospace.geometry.constraint.SunElevationConstraint">
+								<property name="range">
+									<rbf:angular_range units="deg" min="10" max="90" />
+								</property>
+							</bean>
+							<bean class="com.radiantblue.analytics.aerospace.geometry.constraint.CATSConstraint">
+								<property name="range">
+									<rbf:angular_range units="deg" min="60" max="180" />
+								</property>
+							</bean>
+							<bean class="com.radiantblue.analytics.aerospace.geometry.constraint.GrazeConstraint">
+								<property name="range">
+									<rbf:angular_range units="deg" min="5" max="80" />
+								</property>
+							</bean>
+							<bean class="com.radiantblue.analytics.aerospace.geometry.constraint.UnsignedSquintConstraint">
+								<property name="range">
+									<rbf:angular_range units="deg" min="30" max="150" />
+								</property>
+							</bean>
+						</list>
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+</beans>

@@ -1,0 +1,26 @@
+description = 'CommonMS'
+
+dependencies {
+	if (analytics_projects) {
+		api project(':rb-astro')
+		api project(':analytics-isr-core')
+	}
+	else {
+		api "com.radiantblue.blueground:rb-astro:$analytics_version"
+		api "com.radiantblue.blueground:analytics-isr-core:$analytics_version"
+	}
+
+	if (kelly_projects) {
+		implementation project(':czmlwriter')
+	}
+	else {
+		implementation 'com.maxar.cesium:czmlwriter:0.0.1-RELEASE-a2f3cee'
+	}
+
+	compileOnly "org.projectlombok:lombok:$lombok_version"
+	annotationProcessor "org.projectlombok:lombok:$lombok_version"
+	
+	implementation "org.springframework:spring-web:$spring_version"
+	
+	testCompile "junit:junit:$junit_version"
+}

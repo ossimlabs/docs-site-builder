@@ -1,0 +1,71 @@
+.denied-page {
+    height: calc(100vh);
+    background-image: url("../../assets/background.jpg");
+    background-size: cover;
+    background-position: center;
+    position: relative;
+}
+
+.center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -65%);
+    width: 900px;
+    text-align: center;
+}
+
+.lock-icon {
+    font-size: 8em;
+    margin-bottom: 30px;
+    color: white;
+    text-shadow:    1px 1px 0px #195a6c,
+                    2px 2px 0px #195a6c,
+                    3px 3px 0px #195a6c,
+                    4px 4px 7px #195a6c
+}
+
+.mat-card {
+    box-shadow: 0 5px 5px 0 rgba(0, 0, 0, .25);
+    height: 450px;
+    color: #195a6c;
+}
+
+.content-wrapper {
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.card-content {
+    position: relative;
+}
+
+.card-content {
+    position: relative;
+}
+
+.card-button {
+    transform: scale(1);  /* fix for blurring */
+    height: 50px;
+    line-height: 50px;
+    color: white;
+    background-image: linear-gradient(to bottom, #288eab 0%, #195a6c 100%);
+}
+
+.previous-url {
+    font-size: 1.3em;
+    font-weight: bold;
+}
+
+#card-header {
+    font-size: 2.5em;
+    font-weight: bold;
+    margin-bottom: 40px;
+}
+
+#card-text {
+    font-size: 1.0em;
+    margin-bottom: 80px;
+    color: slategray;
+}

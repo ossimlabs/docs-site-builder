@@ -1,0 +1,13 @@
+description = 'WeatherParser'
+
+dependencies {
+    if (kelly_projects) {
+        implementation project(':weatherRepository')
+    }
+    else {
+        implementation 'com.maxar:weatherRepository:0.0.2-RELEASE-372c75e'
+    }
+
+    implementation 'javax.persistence:javax.persistence-api:2.2'
+    implementation "org.hibernate:hibernate-core:${hibernate_version}"
+}

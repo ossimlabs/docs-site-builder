@@ -1,0 +1,18 @@
+description = 'TargetRepository'
+
+dependencies {
+	if (kelly_projects) {
+		api project(':targetModel')
+	}
+	else {
+		api 'com.maxar:targetModel:0.0.1-RELEASE-9517da8'
+	}
+
+	implementation "org.hibernate:hibernate-spatial:$hibernate_version"
+	implementation ("org.springframework.data:spring-data-jpa:$springdata_version") {
+		exclude group: 'org.aspectj', module: 'aspectjrt'
+	}
+
+	compileOnly "org.projectlombok:lombok:$lombok_version"
+	annotationProcessor "org.projectlombok:lombok:$lombok_version"
+}

@@ -1,0 +1,9 @@
+description = 'MicroserviceDBUtils'
+
+dependencies {
+	implementation "org.slf4j:slf4j-log4j12:$log4j_version"
+	implementation "org.hibernate:hibernate-core:$hibernate_version"
+	implementation ("org.springframework.data:spring-data-jpa:$springdata_version") {
+		exclude group: 'org.aspectj', module: 'aspectjrt'
+	}
+}

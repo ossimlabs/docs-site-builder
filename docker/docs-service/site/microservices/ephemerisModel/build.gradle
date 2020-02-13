@@ -1,0 +1,15 @@
+description = 'EphemerisModel'
+
+dependencies { 
+    if (kelly_projects) {
+        implementation project(':commonMS')
+    }
+    else {
+        implementation 'com.maxar:commonMS:0.0.1-RELEASE-718290f'
+    }
+
+    implementation "joda-time:joda-time:$jodatime_version"
+
+    compileOnly "org.projectlombok:lombok:$lombok_version"
+    annotationProcessor "org.projectlombok:lombok:$lombok_version"
+}

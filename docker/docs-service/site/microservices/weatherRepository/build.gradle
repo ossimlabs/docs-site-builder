@@ -1,0 +1,18 @@
+description = 'WeatherRepository'
+
+dependencies {
+	if (kelly_projects) {
+		api project(':weatherModel')
+	}
+	else {
+		api 'com.maxar:weatherModel:0.0.2-RELEASE-4cacd0f'
+	}
+
+	implementation "org.hibernate:hibernate-spatial:$hibernate_version"
+	implementation ("org.springframework.data:spring-data-jpa:$springdata_version") {
+		exclude group: 'org.aspectj', module: 'aspectjrt'
+	}
+
+	compileOnly "org.projectlombok:lombok:$lombok_version"
+	annotationProcessor "org.projectlombok:lombok:$lombok_version"
+}

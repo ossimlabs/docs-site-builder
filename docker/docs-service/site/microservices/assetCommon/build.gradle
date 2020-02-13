@@ -1,0 +1,30 @@
+description = 'AssetCommon'
+
+dependencies {
+	if (analytics_projects) {
+		api project(':analytics-isr')
+		api project(':AstroStds')
+	}
+	else {
+		api "com.radiantblue.blueground:analytics-isr:$analytics_version"
+		api "com.radiantblue.afas:AstroStds:$afas_version"
+	}
+
+	if (kelly_projects) {
+		api project(':assetModel')
+		api project(':ephemerisModel')
+		api project(':missionModel')
+	}
+	else {
+		api 'com.maxar:assetModel:0.0.1-RELEASE-9517da8'
+		api 'com.maxar:ephemerisModel:0.0.1-RELEASE-9517da8'
+		api 'com.maxar:missionModel:0.0.1-RELEASE-9517da8'
+	}
+
+	implementation "org.springframework:spring-web:$spring_version"
+
+	compileOnly "org.projectlombok:lombok:$lombok_version"
+    annotationProcessor "org.projectlombok:lombok:$lombok_version"
+
+	testCompile "junit:junit:$junit_version"
+}

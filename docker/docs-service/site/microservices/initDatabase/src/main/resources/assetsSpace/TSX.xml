@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:c="http://www.springframework.org/schema/c"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:rbf="http://www.radiantblue.com/schema/rb/foundation"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-3.1.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util-3.1.xsd
+        http://www.radiantblue.com/schema/rb/foundation
+        http://www.radiantblue.com/schema/rb/foundation/rb-foundation-1.0.xsd">
+
+	
+	<bean id="TSX" class="com.radiantblue.analytics.isr.core.model.asset.Satellite" scope="prototype">
+		<property name="name" value="TSX" />
+		<property name="id" value="31698" />
+		<property name="propagator" ref="TSX_propagator" />
+
+		<property name="ssdr">
+			<bean class="com.radiantblue.analytics.isr.core.model.ssdr.SSDR" factory-method="apply">
+				<constructor-arg>
+					<rbf:data_volume units="Gb" value="500" />
+				</constructor-arg>
+			</bean>
+		</property>
+
+		<property name="interpolator">
+			<bean
+				class="com.radiantblue.analytics.mechanics.statevectors.RawStateVectorProviderInterpolator" />
+		</property>
+
+		<property name="revAndPassCalculator" ref="TSX_RevPassCalc" />
+			
+		<property name="payloads">
+			<list>
+				<bean class="com.radiantblue.analytics.isr.core.model.payload.Payload">
+					<property name="name" value="TSX_DownlinkPayload" />
+					<property name="accessConstraints">
+						<list>
+							<bean class="com.radiantblue.analytics.aerospace.geometry.constraint.GrazeConstraint">
+								<property name="range">
+									<rbf:angular_range units="deg" min="5" max="90" />
+								</property>
+							</bean>
+						</list>
+					</property>
+
+					<property name="mount">
+						<bean class="com.radiantblue.analytics.isr.core.model.payload.mount.VectorPayloadMount">
+							<property name="payloadXInBodyFrame">
+								<rbf:vector3d delimeter="," value="1,0,0" />
+							</property>
+							<property name="payloadYInBodyFrame">
+								<rbf:vector3d delimeter="," value="0,1,0" />
+							</property>
+							<property name="payloadZInBodyFrame">
+								<rbf:vector3d delimeter="," value="0,0,1" />
+							</property>
+						</bean>
+					</property>
+
+					<property name="sensors">
+						<list>
+							<bean class="com.radiantblue.analytics.isr.comms.DownlinkSensor">
+								<property name="name" value="TSX_CommSensor" />
+								<property name="modes">
+									<list>
+										<bean class="com.radiantblue.analytics.isr.comms.DownlinkCommMode">
+											<property name="name" value="TSX_DownlinkMode" />
+											<property name="accessConstraints">
+												<list>
+                                                    <bean class="com.radiantblue.analytics.isr.core.component.accgen.constraint.RequirementTypeConstraint">
+                                                        <property name="requiredRequirementType" value = "com.radiantblue.analytics.isr.core.model.requirement.IDownlinkRequirement"/>
+                                                    </bean>												</list>
+											</property>
+
+											<property name="attitudeCalculator">
+												<bean
+													class="com.radiantblue.analytics.isr.assets.attitude.GenericTrackingAttitudeSelector">
+													<property name="payloadMount">
+														<bean class="com.radiantblue.analytics.isr.core.model.payload.mount.VectorPayloadMount">
+															<property name="payloadXInBodyFrame">
+																<rbf:vector3d delimeter="," value="1,0,0" />
+															</property>
+															<property name="payloadYInBodyFrame">
+																<rbf:vector3d delimeter="," value="0,0,-1" />
+															</property>
+															<property name="payloadZInBodyFrame">
+																<rbf:vector3d delimeter="," value="0,1,0" />
+															</property>
+														</bean>
+													</property>
+												</bean>
+											</property>
+										</bean>
+									</list>
+								</property>
+							</bean>
+						</list>
+					</property>
+				</bean>
+				<bean class="com.radiantblue.analytics.isr.core.model.payload.Payload">
+					<property name="name" value="TSX_Payload" />
+
+					<property name="sensors">
+						<list>
+							<bean class="com.radiantblue.analytics.isr.sar.RadarSensor" p:name="TSX_Framing_Sensor">
+
+								<property name="displayFOR">
+									<bean id="ButterflyFootprint_NoNotch" class="com.radiantblue.analytics.aerospace.geometry.footprint.ButterflyFOR">
+										<property name="squintRange">
+											<rbf:angular_range units="deg" min="85"
+												max="95" />
+										</property>
+
+										<property name="squintStep">
+											<rbf:angle units="deg" value="1.0" />
+										</property>
+
+										<property name="grazeRange">
+											<rbf:angular_range units="deg" min="34.76"
+												max="70.294" />
+										</property>
+
+										<property name="grazeStep">
+											<rbf:angle units="deg" value="1.0" />
+										</property>
+
+										<property name="minCrosstrackRange">
+											<rbf:length units="km" value="0" />
+										</property>
+
+										<property name="fovSide" value="RIGHT" />
+									</bean>
+								</property>
+
+								<property name="modes">
+									<list>
+										<bean class="com.radiantblue.analytics.isr.sar.framer.SARFramingMode" p:name="TSX_Framing_Mode">
+											<property name="attitudeCalculator">
+												<bean class="com.radiantblue.analytics.isr.sar.attitude.GenericRadarAttitudeSelector">
+												</bean>
+											</property>
+
+											<property name="framingTable" ref="TSX_SAR_table" />
+
+										</bean>
+									</list>
+								</property>
+
+							</bean>
+
+
+						</list>
+					</property>
+
+					<property name="accessConstraints">
+						<list>
+							<bean class="com.radiantblue.analytics.aerospace.geometry.constraint.GrazeConstraint">
+								<property name="range">
+									<rbf:angular_range units="deg" min="34.76"
+										max="70.294" />
+								</property>
+							</bean>
+							<bean class="com.radiantblue.analytics.aerospace.geometry.constraint.SignedSquintConstraint">
+								<property name="range">
+									<rbf:angular_range units="deg" min="85" max="95" />
+								</property>
+							</bean>
+						</list>
+					</property>
+
+				</bean>
+			</list>
+		</property>
+	</bean>
+	
+	<!-- Insert any singleton beans into an assets _Beans file. These beans 
+		will be loaded once while the assets will be initialized each time it is 
+		accessed -->
+
+	<!-- defines the TLE we want to use -->
+	<bean id="TSX_tle"
+		class="com.radiantblue.analytics.mechanics.orbit.elementproviders.TLEElementProvider"
+		p:line0="TERRASAR-X"
+		p:line1="1 31698U 07026A   12241.90159329  .00001835  00000-0  90556-4 0  3765"
+		p:line2="2 31698  97.4459 247.6170 0001691 106.4765 342.1243 15.19154392288692">
+	</bean>
+
+	<!-- defines an J2 propagator using the TLE -->
+	<bean id="TSX_propagator" class="com.radiantblue.analytics.mechanics.orbit.J2Propagator"
+		c:provider-ref="TSX_tle" />
+
+	<bean id="TSX_RevPassCalc"
+		class="com.radiantblue.analytics.mechanics.orbit.revandpass.AscendingNodeRevAndPassCalculator">
+		<property name="epochRevAndPass">
+			<bean
+				class="com.radiantblue.analytics.mechanics.orbit.revandpass.RevAndPassFromTLE"
+				p:tle-ref="TSX_tle" />
+		</property>
+
+		<property name="sampleStep">
+			<rbf:timespan units="minutes" value="10" />
+		</property>
+
+		<property name="stateVectorProvider" ref="TSX_propagator" />
+
+	</bean>
+	
+	<bean name="ManeuverModel" class="com.radiantblue.analytics.gnc.maneuver.EigenAxisManeuverModel" scope="prototype">
+		<property name="rateSelector">
+			<bean class="com.radiantblue.analytics.core.maneuver.r3.EllipsoidalEigenAxisRateSelector">
+				<property name="javLimits">
+					<bean class="com.radiantblue.analytics.core.maneuver.r3.JAVLimits"
+						c:velocityLimits-ref="3DegPerSecLimits" c:accelerationLimits-ref="3DegPerSecLimits"
+						c:jerkLimits-ref="3DegPerSecLimits" />
+				</property>
+			</bean>
+		</property>
+		
+		<property name="cruiseAttitudeSelector">
+			<bean class="com.radiantblue.analytics.isr.assets.attitude.SolarTrackingAttitudeSelector">
+				<property name="solarPanelMount">
+					<bean class="com.radiantblue.analytics.isr.core.model.payload.mount.VectorPayloadMount">
+						<property name="payloadZInBodyFrame">
+							<rbf:vector3d delimeter="," value="1,0,0" />
+						</property>
+						<property name="payloadYInBodyFrame">
+							<rbf:vector3d delimeter="," value="0,-1,0" />
+						</property>
+						<property name="payloadXInBodyFrame">
+							<rbf:vector3d delimeter="," value="0,0,1" />
+						</property>
+					</bean>
+				</property>
+			</bean>
+		</property>
+	</bean>
+
+	<bean id="TSX_SAR_table"
+		class="com.radiantblue.analytics.isr.sar.framer.table.FixedValueSARFrameTable">
+		<property name="avgPowerWatts" value="9000" />
+		<property name="dwellTime">
+			<rbf:timespan units="millisecs" value="4000" />
+		</property>
+		<property name="fileSize">
+			<rbf:data_volume units="Gb" value="1.0" />
+		</property>
+		<property name="frameSizeInAzimuthDirection">
+			<rbf:length units="km" value="20" />
+		</property>
+		<property name="frameSizeInRangeDirection">
+			<rbf:length units="km" value="20" />
+		</property>
+		<property name="quality" value="4.0" />
+	</bean>
+
+</beans>

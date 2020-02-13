@@ -1,0 +1,17 @@
+description = 'WeatherModel'
+
+dependencies {
+    if (kelly_projects) {
+        api project(':commonMS')
+        api project(':czmlwriter')
+    }
+    else {
+        api 'com.maxar:commonMS:0.0.1-RELEASE-718290f'
+        api 'com.maxar.cesium:czmlwriter:0.0.1-RELEASE-a2f3cee'
+    }
+
+    implementation 'io.swagger:swagger-annotations:1.5.20'
+
+    compileOnly "org.projectlombok:lombok:$lombok_version"
+    annotationProcessor "org.projectlombok:lombok:$lombok_version"
+}

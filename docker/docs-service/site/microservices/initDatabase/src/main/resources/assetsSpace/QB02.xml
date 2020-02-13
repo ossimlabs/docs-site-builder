@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:c="http://www.springframework.org/schema/c"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:rbf="http://www.radiantblue.com/schema/rb/foundation"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-3.1.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util-3.1.xsd
+        http://www.radiantblue.com/schema/rb/foundation
+        http://www.radiantblue.com/schema/rb/foundation/rb-foundation-1.0.xsd">
+
+	<!-- defines the TLE we want to use -->
+	<bean id="QB02_tle" class="com.radiantblue.analytics.mechanics.orbit.elementproviders.TLEElementProvider"
+		p:line0="QUICKBIRD 2"
+		p:line1="1 26953U 01047A   14063.14731821  .00044896  00000-0  71584-3 0  4723"
+		p:line2="2 26953  97.1339 129.3033 0001057  60.8778  15.9499 15.53107011695268">
+	</bean>
+
+	<!-- defines an J2 propagator using the TLE -->
+	<bean id="QB02_propagator" class="com.radiantblue.analytics.mechanics.orbit.J2Propagator"
+		c:provider-ref="QB02_tle" />
+
+	<bean id="QB02" class="com.radiantblue.analytics.isr.core.model.asset.Satellite" scope="prototype">
+
+		<property name="name" value="QB02" />
+		<property name="id" value="26953" />
+		<property name="propagator" ref="QB02_propagator" />
+
+		<property name="ssdr">
+			<bean class="com.radiantblue.analytics.isr.core.model.ssdr.SSDR" factory-method="apply">
+				<constructor-arg>
+					<rbf:data_volume units="Gb" value="500" />
+				</constructor-arg>
+			</bean>
+		</property>
+
+		<property name="interpolator">
+			<bean
+				class="com.radiantblue.analytics.mechanics.statevectors.RawStateVectorProviderInterpolator" />
+		</property>
+
+		<!-- defines a rev and pass calculator using the ascending node to increment 
+			revs -->
+		<property name="revAndPassCalculator">
+			<bean class="com.radiantblue.analytics.mechanics.orbit.revandpass.AscendingNodeRevAndPassCalculator">
+				<property name="epochRevAndPass">
+					<bean class="com.radiantblue.analytics.mechanics.orbit.revandpass.RevAndPassFromTLE"
+						p:tle-ref="QB02_tle" />
+				</property>
+
+				<property name="sampleStep">
+					<rbf:timespan units="minutes" value="10" />
+				</property>
+
+				<property name="stateVectorProvider" ref="QB02_propagator" />
+
+			</bean>
+		</property>
+
+		<property name="maneuverModel">
+			<bean class="com.radiantblue.analytics.gnc.maneuver.EigenAxisManeuverModel">
+				<property name="rateSelector">
+					<bean class="com.radiantblue.analytics.core.maneuver.r3.EllipsoidalEigenAxisRateSelector">
+						<property name="javLimits">
+							<bean class="com.radiantblue.analytics.core.maneuver.r3.JAVLimits"
+								factory-method="createSymetric">
+								<constructor-arg index="0" value="2.7" />
+								<constructor-arg index="1" value="0.094" />
+								<constructor-arg index="2" value="100.0" />
+							</bean>
+						</property>
+					</bean>
+				</property>
+
+				<property name="cruiseAttitudeSelector">
+					<bean class="com.radiantblue.analytics.isr.assets.attitude.SolarTrackingAttitudeSelector">
+						<property name="solarPanelMount">
+							<bean class="com.radiantblue.analytics.isr.core.model.payload.mount.VectorPayloadMount">
+								<property name="payloadZInBodyFrame">
+									<rbf:vector3d delimeter="," value="1,0,0" />
+								</property>
+								<property name="payloadYInBodyFrame">
+									<rbf:vector3d delimeter="," value="0,-1,0" />
+								</property>
+								<property name="payloadXInBodyFrame">
+									<rbf:vector3d delimeter="," value="0,0,1" />
+								</property>
+							</bean>
+						</property>
+					</bean>
+				</property>
+			</bean>
+		</property>
+
+		<property name="payloads">
+			<list>
+				<bean class="com.radiantblue.analytics.isr.core.model.payload.Payload">
+					<property name="name" value="QB02_DownlinkPayload" />
+					<property name="accessConstraints">
+						<list>
+							<bean class="com.radiantblue.analytics.aerospace.geometry.constraint.GrazeConstraint">
+								<property name="range">
+									<rbf:angular_range units="deg" min="5" max="90" />
+								</property>
+							</bean>
+						</list>
+					</property>
+
+					<property name="mount">
+						<bean class="com.radiantblue.analytics.isr.core.model.payload.mount.VectorPayloadMount">
+							<property name="payloadXInBodyFrame">
+								<rbf:vector3d delimeter="," value="1,0,0" />
+							</property>
+							<property name="payloadYInBodyFrame">
+								<rbf:vector3d delimeter="," value="0,1,0" />
+							</property>
+							<property name="payloadZInBodyFrame">
+								<rbf:vector3d delimeter="," value="0,0,1" />
+							</property>
+						</bean>
+					</property>
+
+					<property name="sensors">
+						<list>
+							<bean class="com.radiantblue.analytics.isr.comms.DownlinkSensor">
+								<property name="name" value="QB02_CommSensor" />
+								<property name="modes">
+									<list>
+										<bean class="com.radiantblue.analytics.isr.comms.DownlinkCommMode">
+											<property name="name" value="QB02_DownlinkMode" />
+											<property name="accessConstraints">
+												<list>
+                                                    <bean class="com.radiantblue.analytics.isr.core.component.accgen.constraint.RequirementTypeConstraint">
+                                                        <property name="requiredRequirementType" value = "com.radiantblue.analytics.isr.core.model.requirement.IDownlinkRequirement"/>
+                                                    </bean>
+												</list>
+											</property>
+
+											<property name="attitudeCalculator">
+												<bean
+													class="com.radiantblue.analytics.isr.assets.attitude.GenericTrackingAttitudeSelector">
+													<property name="payloadMount">
+														<bean class="com.radiantblue.analytics.isr.core.model.payload.mount.VectorPayloadMount">
+															<property name="payloadXInBodyFrame">
+																<rbf:vector3d delimeter="," value="1,0,0" />
+															</property>
+															<property name="payloadYInBodyFrame">
+																<rbf:vector3d delimeter="," value="0,0,-1" />
+															</property>
+															<property name="payloadZInBodyFrame">
+																<rbf:vector3d delimeter="," value="0,1,0" />
+															</property>
+														</bean>
+													</property>
+												</bean>
+											</property>
+										</bean>
+									</list>
+								</property>
+							</bean>
+						</list>
+					</property>
+				</bean>
+				<bean class="com.radiantblue.analytics.isr.core.model.payload.Payload">
+					<property name="name" value="QB02_Payload" />
+					
+					<property name="accessConstraints">
+						<list>
+							<bean class="com.radiantblue.analytics.aerospace.geometry.constraint.SunElevationConstraint">
+								<property name="range">
+									<rbf:angular_range units="deg" min="15" max="90" />
+								</property>
+							</bean>
+							<bean class="com.radiantblue.analytics.aerospace.geometry.constraint.CATSConstraint">
+								<property name="range">
+									<rbf:angular_range units="deg" min="60" max="180" />
+								</property>
+							</bean>
+							<bean class="com.radiantblue.analytics.aerospace.geometry.constraint.NadirAngleConstraint">
+								<property name="range">
+									<rbf:angular_range units="deg" min="0" max="30" />
+								</property>
+							</bean>
+							<bean class="com.radiantblue.analytics.aerospace.geometry.constraint.PassDirectionConstraint">
+								<property name="passDirection" value="DESCENDING" />
+							</bean>
+						</list>
+					</property>
+
+					<property name="sensors">
+						<list>
+							<bean id="QB02_ScanningSensor" class="com.radiantblue.analytics.isr.eo.scanner.EOScanner"
+								p:name="QB02_ScanningSensor">
+								<property name="pixelDefinition">
+									<bean class="com.radiantblue.analytics.isr.eo.SquarePixel">
+										<property name="pitch">
+											<rbf:length units="microns" value="12" />
+										</property>
+									</bean>
+								</property>
+
+								<property name="numPixels" value="27049" />
+
+								<property name="focalLength">
+									<rbf:length units="in" value="348.52" />
+								</property>
+
+								<property name="niirsCalculator">
+									<bean class="com.radiantblue.analytics.isr.eo.SimpleNiirsCalculator">
+										<property name="a" value="9.32" />
+										<property name="b" value="-3.32" />
+									</bean>
+								</property>
+								
+								<property name="displayFOR">
+									<bean class="com.radiantblue.analytics.aerospace.geometry.footprint.NadirFOR">
+										<property name="maxNadirAngle">
+											<rbf:angle units="deg" value="30" />
+										</property>
+									</bean>
+								</property>
+								
+								<property name="modes">
+									<list>
+										<bean id="QB02_ScanMode" class="com.radiantblue.analytics.isr.eo.scanner.EOScanningMode"
+											p:name="QB02_ScanMode">
+
+											<property name="bitsPerPixel" value="4" />
+
+											<property name="lineRateStrategy">
+												<bean class="com.radiantblue.analytics.isr.eo.scanner.ConstantLineRateStrategy">
+													<property name="linesPerSecond" value="6900" />
+												</bean>
+											</property>
+
+											<property name="scanStrategy">
+												<bean class="com.radiantblue.analytics.isr.eo.scanner.DefaultEOScanCalculator">
+													<property name="edgePad">
+														<rbf:length units="km" value="1" />
+													</property>
+												</bean>
+											</property>
+
+											<property name="attitudeCalculator">
+												<bean
+													class="com.radiantblue.analytics.isr.eo.attitude.FixedScanDirectionAttitudeSelector">
+													<property name="scanAzimuthOffNorthCW">
+														<rbf:angle units="deg" value="0" />
+													</property>
+												</bean>
+											</property>
+
+											<property name="scanDirectionStrategy">
+												<bean class="com.radiantblue.analytics.isr.eo.scanner.RasterScanStrategy" />
+											</property>
+										</bean>
+
+									</list>
+
+								</property>
+
+							</bean>
+						</list>
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+
+</beans>

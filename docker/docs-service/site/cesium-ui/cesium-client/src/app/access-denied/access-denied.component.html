@@ -1,0 +1,18 @@
+<div class="denied-page">
+    <div class="center">
+        <div><i class="fa fa-lock lock-icon" aria-hidden="true"></i></div>
+        <mat-card>
+            <div class="content-wrapper">
+                <mat-card-content class="card-content">
+                    <div id="card-header">Sorry, but you don't have access to this page.</div>
+                    <div id="card-text" *ngIf="hasPreviousRoute()">
+                        You tried to visit <a href={{previousURL}} class="previous-url">{{previousURL}}</a>.
+                    </div>
+                </mat-card-content>
+                <mat-card-actions>
+                    <a mat-raised-button routerLink="/" class="card-button">Go To Homepage</a>
+                </mat-card-actions>
+            </div>
+        </mat-card>
+    </div>
+</div>

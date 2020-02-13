@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+    <Document>
+        <Folder>
+            <Placemark>
+                <name>document_folder_placemark_multigeometry_multiple_00</name>
+                <MultiGeometry>
+                    <Point>
+                        <coordinates>29.70703125,24.407137917727667</coordinates>
+                    </Point>
+                    <Polygon>
+                        <outerBoundaryIs>
+                            <LinearRing>
+                                <coordinates>29.70703125,24.407137917727667 31.596679687499996,24.407137917727667
+                                    31.596679687499996,26.293415004265796 29.70703125,26.293415004265796
+                                    29.70703125,24.407137917727667
+                                </coordinates>
+                            </LinearRing>
+                        </outerBoundaryIs>
+                    </Polygon>
+                </MultiGeometry>
+            </Placemark>
+            <Placemark>
+                <name>document_folder_placemark_multigeometry_multiple_01</name>
+                <MultiGeometry>
+                    <Point>
+                        <coordinates>29.7,24.4</coordinates>
+                    </Point>
+                    <Polygon>
+                        <outerBoundaryIs>
+                            <LinearRing>
+                                <coordinates>29.7,24.4 31.5,24.4
+                                    31.5,26.2 29.7,26.2
+                                    29.7,24.4
+                                </coordinates>
+                            </LinearRing>
+                        </outerBoundaryIs>
+                    </Polygon>
+                </MultiGeometry>
+            </Placemark>
+            <Placemark>
+                <name>document_folder_placemark_multigeometry_multiple_02</name>
+                <MultiGeometry>
+                    <Point>
+                        <coordinates>28.7,23.4</coordinates>
+                    </Point>
+                    <Polygon>
+                        <outerBoundaryIs>
+                            <LinearRing>
+                                <coordinates>28.7,23.4 30.5,23.4
+                                    30.5,25.2 28.7,25.2
+                                    28.7,23.4
+                                </coordinates>
+                            </LinearRing>
+                        </outerBoundaryIs>
+                    </Polygon>
+                </MultiGeometry>
+            </Placemark>
+        </Folder>
+    </Document>
+</kml>

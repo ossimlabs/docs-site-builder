@@ -1,0 +1,27 @@
+<router-outlet></router-outlet>
+<div class="map-layer-view">
+  <div #resizeBox class="tree-wrapper">
+    <span #dragHandleRight cdkDragLockAxis="x" class="drag-handle right" cdkDrag
+      (cdkDragMoved)="dragMove()"
+      [cdkDragFreeDragPosition]="dragHandleRightPosition"
+      (dblclick)="fitToContent()"
+    >
+    </span>
+    <span #dragArrowRight class="drag-arrow-handle" (click)="toggleTree()">
+      <mat-icon class="mat-icon-rtl-mirror drag-arrow-icon">
+        {{ collapsed ? 'chevron_right' : 'chevron_left' }}
+      </mat-icon>
+    </span>
+    <div #resizeBox class ="layerTree-view">
+      <app-layer-tree></app-layer-tree>
+    </div>
+  </div>
+  <div #mapView class="map-view">
+    <app-cesium-map></app-cesium-map>
+  </div>
+</div>
+<div class="timeline-view">
+  <app-timeline></app-timeline>
+</div>
+<banner [content]="bannerContent"></banner>
+

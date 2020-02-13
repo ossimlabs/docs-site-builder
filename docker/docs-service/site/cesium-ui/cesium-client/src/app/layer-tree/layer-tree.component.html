@@ -1,0 +1,25 @@
+<div class='tree'>
+  <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
+      <!-- This is the tree node template for expandable nodes -->
+      <mat-tree-node *matTreeNodeDef="let node;when: hasChild" matTreeNodePadding [ngClass]="{ 'background-highlight': activeNode === node }">
+        <button mat-icon-button matTreeNodeToggle
+                [attr.aria-label]="'toggle ' + node.name">
+          <mat-icon class="mat-icon-rtl-mirror">
+            {{node.expandable() ? (treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right') : ''}}
+          </mat-icon>
+        </button>
+        <mat-checkbox [checked]="node.selected"
+                      [indeterminate]="node.partialSelected"
+                      (change)="itemSelectionToggle(node)">        
+        </mat-checkbox>
+        <div class="nodeName"(click)="itemClicked(node); activeNode = node" >{{node.name}}</div>
+      </mat-tree-node>
+  </mat-tree>
+</div>
+<div class='datePicker'>
+  <mat-form-field>
+    <input matInput [matDatepicker]="picker" placeholder="Jump To Date" [value]="jumpToDateControl.value" (dateInput)="jumpToDate($event)">
+    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+    <mat-datepicker #picker></mat-datepicker>
+  </mat-form-field>
+</div>

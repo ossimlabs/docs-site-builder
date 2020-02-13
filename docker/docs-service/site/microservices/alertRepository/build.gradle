@@ -1,0 +1,21 @@
+description = 'alertRepository'
+
+dependencies {
+    if (kelly_projects) {
+        implementation project(':alertModel')
+    }
+    else {
+        implementation 'com.maxar:alertModel:0.0.1-RELEASE-718290f'
+    }
+
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.9.0'
+    implementation 'io.swagger:swagger-annotations:1.5.20'
+    implementation "joda-time:joda-time:$jodatime_version"
+    implementation "org.hibernate:hibernate-spatial:$hibernate_version"
+    implementation ("org.springframework.data:spring-data-jpa:$springdata_version") {
+        exclude group: 'org.aspectj', module: 'aspectjrt'
+    }
+
+    compileOnly "org.projectlombok:lombok:$lombok_version"
+    annotationProcessor "org.projectlombok:lombok:$lombok_version"
+}

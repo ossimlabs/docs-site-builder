@@ -1,0 +1,69 @@
+plugins {
+	id 'org.springframework.boot'
+	id 'war'
+}
+
+apply plugin: 'io.spring.dependency-management'
+
+description = 'InitDatabase'
+
+bootWar.archiveName = name + '.war'
+springBoot.mainClassName = 'com.maxar.init.database.loaders.planning.InitPlanning'
+
+publish.dependsOn bootJar
+
+dependencies {
+	if (analytics_projects) {
+		api project(':analytics-isr')
+	}
+	else {
+		api "com.radiantblue.blueground:analytics-isr:$analytics_version"
+	}
+
+	if (kelly_projects) {
+		implementation project(':assetCommon')
+		implementation project(':assetRepository')
+		implementation project(':ephemerisRepository')
+		implementation project(':opGenCommon')
+		implementation project(':planningRepository')
+		implementation project(':targetRepository')
+		implementation project(':weatherParser')
+		implementation project(':weatherRepository')
+		implementation project(':missionRepository')
+	}
+	else {
+		implementation 'com.maxar:assetCommon:0.0.2-RELEASE-7f3f6a6'
+		implementation 'com.maxar:assetRepository:0.0.1-RELEASE-9517da8'
+		implementation 'com.maxar:ephemerisRepository:0.0.1-RELEASE-f9205b0'
+		implementation 'com.maxar:opGenCommon:0.0.1-RELEASE-5cdae1a'
+		implementation 'com.maxar:planningRepository:0.0.3-RELEASE-4cacd0f'
+		implementation 'com.maxar:targetRepository:0.0.1-RELEASE-f9205b0'
+		implementation 'com.maxar:weatherParser:0.0.1-RELEASE-cc0de37'
+		implementation 'com.maxar:weatherRepository:0.0.2-RELEASE-372c75e'
+		implementation 'com.maxar:missionRepository:0.0.1-RELEASE-f9205b0'
+	}
+
+	implementation "com.fasterxml.jackson.datatype:jackson-datatype-joda:$jackson_version"
+	implementation "com.fasterxml.jackson.module:jackson-module-paranamer:$jackson_version"
+	implementation "com.fasterxml.jackson.module:jackson-module-scala_2.12:$jackson_version"
+	implementation "io.springfox:springfox-swagger-ui:$swagger_version"
+	implementation "io.springfox:springfox-swagger2:$swagger_version"
+	implementation "joda-time:joda-time:$jodatime_version"
+	implementation "org.apache.commons:commons-lang3:$apachecommonslang_version"
+	implementation "org.hibernate:hibernate-spatial:$hibernate_version"
+	implementation "org.slf4j:slf4j-log4j12:$log4j_version"
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework:spring-test'
+	implementation ('org.reflections:reflections:0.9.8') {
+		exclude group: 'com.google.guava', module:'guava'
+		exclude group: 'javassist', module: 'javassist'
+		implementation 'xml-apis:xml-apis:1.0.b2'
+	}
+
+	providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
+
+	configurations {
+		compile.exclude group:'ch.qos.logback'
+	}
+}

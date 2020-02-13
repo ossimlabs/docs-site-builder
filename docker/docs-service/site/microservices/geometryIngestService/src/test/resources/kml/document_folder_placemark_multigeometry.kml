@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+    <Document>
+        <Folder>
+            <Placemark>
+                <name>document_folder_placemark_multigeometry</name>
+                <MultiGeometry>
+                    <Point>
+                        <coordinates>29.70703125,24.407137917727667</coordinates>
+                    </Point>
+                    <Polygon>
+                        <outerBoundaryIs>
+                            <LinearRing>
+                                <coordinates>29.70703125,24.407137917727667 31.596679687499996,24.407137917727667
+                                    31.596679687499996,26.293415004265796 29.70703125,26.293415004265796
+                                    29.70703125,24.407137917727667
+                                </coordinates>
+                            </LinearRing>
+                        </outerBoundaryIs>
+                    </Polygon>
+                </MultiGeometry>
+            </Placemark>
+        </Folder>
+    </Document>
+</kml>

@@ -1,0 +1,16 @@
+apply plugin: 'application'
+
+mainClassName = "com.radiantblue.webstats.Webstats"
+
+repositories {
+   maven {
+			url uri("../../../dependencies-internal")
+		}
+	maven {
+			url uri("../../../dependencies-external")
+		}
+}
+
+dependencies {
+    compile 'commons-lang:commons-lang:2.6'
+}

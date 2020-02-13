@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p" xmlns:c="http://www.springframework.org/schema/c"
+	xmlns:util="http://www.springframework.org/schema/util" xmlns:rbf="http://www.radiantblue.com/schema/rb/foundation"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context-3.1.xsd
+        http://www.springframework.org/schema/util
+        http://www.springframework.org/schema/util/spring-util-3.1.xsd
+        http://www.radiantblue.com/schema/rb/foundation
+        http://www.radiantblue.com/schema/rb/foundation/rb-foundation-1.0.xsd">
+
+	<!-- maneuver rates -->
+	<bean id="AircraftManeuver" class="com.radiantblue.analytics.core.maneuver.r3.RateLimits"
+		c:xRate="3.0" c:yRate="3.0" c:zRate="3.0" />
+
+	<bean id="AIR_SAR_table"
+		class="com.radiantblue.analytics.isr.sar.framer.table.FixedValueSARFrameTable">
+		<property name="avgPowerWatts" value="9000" />
+		<property name="dwellTime">
+			<rbf:timespan units="millisecs" value="3000" />
+		</property>
+		<property name="fileSize">
+			<rbf:data_volume units="Gb" value="1.0" />
+		</property>
+		<property name="frameSizeInAzimuthDirection">
+			<rbf:length units="km" value="5" />
+		</property>
+		<property name="frameSizeInRangeDirection">
+			<rbf:length units="km" value="5" />
+		</property>
+		<property name="quality" value="6.0" />
+	</bean>
+	
+	<bean id="AIR_SAR" class="com.radiantblue.analytics.isr.core.model.asset.Aircraft" scope="prototype">
+		<property name="name" value="AIR_SAR" />
+		<property name="id" value="1" />
+		
+		<property name="maneuverModel">
+			<bean class="com.radiantblue.analytics.gnc.maneuver.EigenAxisManeuverModel">
+				<property name="rateSelector">
+					<bean class="com.radiantblue.analytics.core.maneuver.r3.EllipsoidalEigenAxisRateSelector">
+						<property name="javLimits">
+							<bean class="com.radiantblue.analytics.core.maneuver.r3.JAVLimits"
+								c:velocityLimits-ref="AircraftManeuver"
+								c:accelerationLimits-ref="AircraftManeuver" c:jerkLimits-ref="AircraftManeuver" />
+						</property>
+					</bean>
+				</property>
+			</bean>
+		</property>
+	
+		<property name="interpolator">
+			<bean class="com.radiantblue.analytics.mechanics.statevectors.RawStateVectorProviderInterpolator" />
+		</property>
+	
+		<property name="payloads">
+			<list>
+				<bean class="com.radiantblue.analytics.isr.core.model.payload.Payload">
+					<property name="name" value="AIR_SAR_Payload" />
+
+					<property name="sensors">
+						<list>
+							<bean class="com.radiantblue.analytics.isr.sar.RadarSensor"
+								p:name="AIR_SAR_Framing_Sensor">
+								<property name="displayFOR">
+									<bean id="ButterflyFootprint_NoNotch"
+										class="com.radiantblue.analytics.aerospace.geometry.footprint.ButterflyFOR">
+										<property name="squintRange">
+											<rbf:angular_range units="deg" min="20"
+												max="160" />
+										</property>
+
+										<property name="squintStep">
+											<rbf:angle units="deg" value="1.0" />
+										</property>
+
+										<property name="grazeRange">
+											<rbf:angular_range units="deg" min="20"
+												max="80" />
+										</property>
+
+										<property name="minCrosstrackRange">
+											<rbf:length units="km" value="0" />
+										</property>
+
+										<property name="grazeStep">
+											<rbf:angle units="deg" value="1.0" />
+										</property>
+
+										<property name="fovSide" value="BOTH" />
+									</bean>
+								</property>
+								<property name="modes">
+									<list>
+										<bean
+											class="com.radiantblue.analytics.isr.sar.framer.SARFramingMode"
+											p:name="AIR_SAR_Framing_Mode">
+
+											<property name="attitudeCalculator">
+												<bean
+													class="com.radiantblue.analytics.isr.sar.attitude.GenericRadarAttitudeSelector">
+												</bean>
+											</property>
+
+											<property name="framingTable" ref="AIR_SAR_table" />
+										</bean>
+									</list>
+								</property>
+							</bean>
+						</list>
+					</property>
+
+					<property name="accessConstraints">
+						<list>
+							<!-- SLANT RANGE CONSTRAINT -->
+							<!-- <bean class="com.radiantblue.analytics.aerospace.geometry.constraint.SlantRangeConstraint">
+								<property name="range">
+									<rbf:length_range units="nmi" min="0" max="100" />
+								</property>
+							</bean>-->
+							<bean class="com.radiantblue.analytics.aerospace.geometry.constraint.GrazeConstraint">
+								<property name="range">
+									<rbf:angular_range units="deg" min="0" max="90" />
+								</property>
+							</bean>
+							<!-- <bean class="com.radiantblue.analytics.aerospace.geometry.constraint.UnsignedSquintConstraint">
+								<property name="range">
+									<rbf:angular_range units="deg" min="20" max="160" />
+								</property>
+							</bean>-->
+						</list>
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+
+</beans>

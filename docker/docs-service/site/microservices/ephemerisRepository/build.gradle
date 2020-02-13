@@ -1,0 +1,22 @@
+description = 'EphemerisRepository'
+
+dependencies {
+	if (kelly_projects) {
+		implementation project(':commonMS')
+		api project(':ephemerisModel')
+	}
+	else {
+		implementation 'com.maxar:commonMS:0.0.1-RELEASE-718290f'
+		api 'com.maxar:ephemerisModel:0.0.1-RELEASE-9517da8'
+	}
+
+	implementation "org.hibernate:hibernate-core:$hibernate_version"
+	implementation ("org.springframework.data:spring-data-jpa:$springdata_version") {
+		exclude group: 'org.aspectj', module: 'aspectjrt'
+	}
+
+	compileOnly "org.projectlombok:lombok:$lombok_version"
+	annotationProcessor "org.projectlombok:lombok:$lombok_version"
+
+	testImplementation "junit:junit:$junit_version"
+}

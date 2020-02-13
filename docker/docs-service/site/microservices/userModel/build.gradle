@@ -1,0 +1,9 @@
+description = 'UserModel'
+
+dependencies {
+    implementation 'io.swagger:swagger-annotations:1.5.20'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.9.7'
+
+    compileOnly "org.projectlombok:lombok:$lombok_version"
+    annotationProcessor "org.projectlombok:lombok:$lombok_version"
+}
