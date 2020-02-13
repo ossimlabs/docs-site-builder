@@ -1,8 +1,0 @@
-description = 'GeometricIntersectionModel'
-
-dependencies {
-    implementation 'io.swagger:swagger-annotations:1.5.20'
-    
-    compileOnly "org.projectlombok:lombok:$lombok_version"
-	annotationProcessor "org.projectlombok:lombok:$lombok_version"
-}
