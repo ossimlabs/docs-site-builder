@@ -27,8 +27,8 @@ podTemplate(
       ttyEnabled: true,
     ),
     containerTemplate(
-        name: 'ktis-docs',
-        image: "${DOCKER_REGISTRY}/ktis-docs:latest",
+        name: 'ktis-doc-builder',
+        image: "${DOCKER_REGISTRY}/ktis-doc-builder:latest",
         command: 'cat',
         ttyEnabled: true
     )
@@ -51,7 +51,7 @@ podTemplate(
 ) {
   node(POD_LABEL) {
     stage('Clone') {
-      container('ktis-docs') {
+      container('ktis-doc-builder') {
         sh '''
           cd /mkdocs-site
           echo ${PROJECT_YAML} > local_vars.yml
@@ -61,7 +61,7 @@ podTemplate(
     }
 
     stage('Build site') {
-      container('ktis-docs') {
+      container('ktis-doc-builder') {
       sh '''
         cd /mkdocs-site
         python3 tasks/generate.py -c local_vars.yml
