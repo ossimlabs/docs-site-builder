@@ -11,15 +11,6 @@ properties([
 
 podTemplate(
   containers: [
-//     containerTemplate(
-//       name: 'git',
-//       image: 'alpine/git:latest',
-//       ttyEnabled: true,
-//       command: 'cat',
-//       envVars: [
-//           envVar(key: 'HOME', value: '/root')
-//         ]
-//     ),
     containerTemplate(
       name: 'docker',
       image: 'docker:latest',
@@ -88,18 +79,21 @@ podTemplate(
       sh '''
         cd /mkdocs-site
         python3 tasks/generate.py -c local_vars.yml
+        cp -r site/ /home/jenkins/agent/site/
+        cp docker/docs-service/Dockerfile /home/jenkins/agent/Dockerfile
       '''
       }
     }
 
     stage('Build Service') {
       container('docker') {
-        sh '''
-          cd /mkdocs-site
-          mv site/ docker/docs-service/site/
-          docker build docker/docs-service/ -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}
-          docker publish ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}
-        '''
+        withDockerRegistry(credentialsId: 'nexus-credentials', url: "https://${DOCKER_REGISTRY}") {
+          sh '''
+            cd /home/jenkins/agent
+            docker build . -t ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}
+            docker push ${DOCKER_REGISTRY}/${IMAGE_NAME}:${IMAGE_TAG}
+          '''
+        }
       }
     }
   }
