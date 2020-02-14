@@ -54,7 +54,8 @@ podTemplate(
       container('site-builder') {
         sh '''
           cd /mkdocs-site
-          python3 tasks/clone-repos.py
+          echo ${ADHOC_PROJECT_YAML} > adhoc_vars.yml
+          python3 tasks/clone-repos.py -c adhoc_vars.yml
         '''
       }
     }
@@ -63,7 +64,7 @@ podTemplate(
       container('site-builder') {
       sh '''
         cd /mkdocs-site
-        python3 tasks/generate.py
+        python3 tasks/generate.py -c adhoc_vars.yml
       '''
       }
     }
