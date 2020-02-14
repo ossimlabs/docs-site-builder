@@ -5,6 +5,5 @@ docs
 site
 repos
 docker/docs-service/site
-*vars.yml
 out
 .DS_Store

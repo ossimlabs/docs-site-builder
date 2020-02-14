@@ -43,7 +43,7 @@ podTemplate(
     ),
     containerTemplate(
         name: 'site-builder',
-        image: 'radiantsolutions/site-builder:latest',
+        image: 'nexus-docker-private-hosted.ktis.radiantblue.local/site-builder:latest',
         command: 'cat',
         ttyEnabled: true
     )
