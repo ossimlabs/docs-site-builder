@@ -11,6 +11,15 @@ properties([
 
 podTemplate(
   containers: [
+//     containerTemplate(
+//       name: 'git',
+//       image: 'alpine/git:latest',
+//       ttyEnabled: true,
+//       command: 'cat',
+//       envVars: [
+//           envVar(key: 'HOME', value: '/root')
+//         ]
+//     ),
     containerTemplate(
       name: 'docker',
       image: 'docker:latest',
@@ -30,7 +39,10 @@ podTemplate(
         name: 'ktis-doc-builder',
         image: "${DOCKER_REGISTRY}/ktis-doc-builder:latest",
         command: 'cat',
-        ttyEnabled: true
+        ttyEnabled: true,
+        envVars: [
+          envVar(key: 'HOME', value: '/root')
+        ]
     )
   ],
   volumes: [
@@ -50,14 +62,25 @@ podTemplate(
   ]
 ) {
   node(POD_LABEL) {
-    stage('Clone') {
+    stage('Config SSH') {
       container('ktis-doc-builder') {
         sh '''
-          cd /mkdocs-site
-          echo ${PROJECT_YAML} > local_vars.yml
-          python3 tasks/clone-repos.py -c local_vars.yml
+          mkdir /root/.ssh
+          cp -H /bitbucket_secret/ssh-privatekey /root/.ssh/id_rsa
+          echo "Host *" > /root/.ssh/config
+          echo "    StrictHostKeyChecking=no" >> /root/.ssh/config
         '''
       }
+    }
+
+    stage('Clone Repos') {
+        container('ktis-doc-builder') {
+            sh '''
+              cd /mkdocs-site
+              echo "${PROJECT_YAML}" > local_vars.yml
+              python3 tasks/clone_repos.py -c local_vars.yml
+            '''
+        }
     }
 
     stage('Build site') {
