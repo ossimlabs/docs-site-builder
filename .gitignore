@@ -1,4 +1,3 @@
-mkdocs.yml
 build
 .idea
 docs
@@ -7,3 +6,5 @@ repos
 docker/docs-service/site
 out
 .DS_Store
+*vars.yml
+mkdocs.yml
