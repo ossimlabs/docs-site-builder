@@ -4,22 +4,13 @@ properties([
   parameters([
     string(name: 'IMAGE_TAG', defaultValue: 'dev', description: 'Docker image tag used when publishing'),
     string(name: 'IMAGE_NAME', defaultValue: '', description: 'Docker image name used when publishing'),
-    string(name: 'DOCKER_REGISTRY', defaultValue: 'quay.io/radiantsolutions', description: 'The place where docker images are published.'),
+    string(name: 'DOCKER_REGISTRY', defaultValue: '', description: 'The place where docker images are published.'),
     text(name: 'ADHOC_PROJECT_YAML', defaultValue: '', description: 'Override the project vars used to generate documentation')
   ])
 ])
 
 podTemplate(
   containers: [
-    containerTemplate(
-      name: 'git',
-      image: 'alpine/git:latest',
-      ttyEnabled: true,
-      command: 'cat',
-      envVars: [
-        envVar(key: 'HOME', value: '/root')
-      ]
-    ),
     containerTemplate(
       name: 'docker',
       image: 'docker:latest',
@@ -34,12 +25,6 @@ podTemplate(
       image: "${DOCKER_REGISTRY}/jnlp-agent:latest",
       name: 'jnlp', // using Jenkins agent image
       ttyEnabled: true,
-    ),
-    containerTemplate(
-        image: "${DOCKER_REGISTRY}/ktis-builder:2.0",
-        name: 'builder',
-        command: 'cat',
-        ttyEnabled: true
     ),
     containerTemplate(
         name: 'site-builder',
@@ -84,7 +69,7 @@ podTemplate(
     }
 
     stage('Build Service') {
-      container('site-builder') {
+      container('docker') {
         sh '''
           cd /mkdocs-site
           mv site/ docker/docs-service/site/
