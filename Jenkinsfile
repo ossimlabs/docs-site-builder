@@ -5,7 +5,7 @@ properties([
     string(name: 'IMAGE_TAG', defaultValue: 'dev', description: 'Docker image tag used when publishing'),
     string(name: 'IMAGE_NAME', defaultValue: '', description: 'Docker image name used when publishing'),
     string(name: 'DOCKER_REGISTRY', defaultValue: '', description: 'The place where docker images are published.'),
-    text(name: 'ADHOC_PROJECT_YAML', defaultValue: '', description: 'Override the project vars used to generate documentation')
+    text(name: 'PROJECT_YAML', defaultValue: '', description: 'Override the project vars used to generate documentation')
   ])
 ])
 
@@ -27,8 +27,8 @@ podTemplate(
       ttyEnabled: true,
     ),
     containerTemplate(
-        name: 'site-builder',
-        image: "${DOCKER_REGISTRY}/site-builder:latest",
+        name: 'ktis-docs',
+        image: "${DOCKER_REGISTRY}/ktis-docs:latest",
         command: 'cat',
         ttyEnabled: true
     )
@@ -51,20 +51,20 @@ podTemplate(
 ) {
   node(POD_LABEL) {
     stage('Clone') {
-      container('site-builder') {
+      container('ktis-docs') {
         sh '''
           cd /mkdocs-site
-          echo ${ADHOC_PROJECT_YAML} > adhoc_vars.yml
-          python3 tasks/clone-repos.py -c adhoc_vars.yml
+          echo ${PROJECT_YAML} > local_vars.yml
+          python3 tasks/clone-repos.py -c local_vars.yml
         '''
       }
     }
 
     stage('Build site') {
-      container('site-builder') {
+      container('ktis-docs') {
       sh '''
         cd /mkdocs-site
-        python3 tasks/generate.py -c adhoc_vars.yml
+        python3 tasks/generate.py -c local_vars.yml
       '''
       }
     }
