@@ -5,7 +5,7 @@ properties([
     string(name: 'IMAGE_TAG', defaultValue: 'latest', description: 'Docker image tag used when publishing'),
     string(name: 'IMAGE_NAME', defaultValue: '', description: 'Docker image name used when publishing'),
     string(name: 'DOCKER_REGISTRY', defaultValue: '', description: 'The place where docker images are published.'),
-    text(name: 'PROJECT_YAML', defaultValue: '', description: 'Override the project vars used to generate documentation')
+    text(name: 'ADHOC_PROJECT_YAML', defaultValue: '', description: 'Override the project vars used to generate documentation')
   ])
 ])
 
@@ -66,11 +66,17 @@ podTemplate(
 
     stage('Clone Repos') {
         container('ktis-doc-builder') {
-            sh '''
-              cd /mkdocs-site
-              echo "${PROJECT_YAML}" > local_vars.yml
-              python3 tasks/clone_repos.py -c local_vars.yml
-            '''
+          if (ADHOC_PROJECT_YAML == '') {
+            checkout(scm)
+            sh 'cp ./ktis_vars.yml /mkdocs-site/local_vars.yml'
+            
+          } else {
+            sh 'echo "${ADHOC_PROJECT_YAML}" > /mkdocs-site/local_vars.yml'
+          }
+          sh '''
+            cd /mkdocs-site
+            python3 tasks/clone_repos.py -c local_vars.yml
+          '''
         }
     }
 
