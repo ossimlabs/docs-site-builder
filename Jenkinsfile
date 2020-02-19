@@ -2,7 +2,7 @@ properties([
   buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '3', daysToKeepStr: '', numToKeepStr: '20')),
   disableConcurrentBuilds(),
   parameters([
-    string(name: 'IMAGE_TAG', defaultValue: 'dev', description: 'Docker image tag used when publishing'),
+    string(name: 'IMAGE_TAG', defaultValue: 'latest', description: 'Docker image tag used when publishing'),
     string(name: 'IMAGE_NAME', defaultValue: '', description: 'Docker image name used when publishing'),
     string(name: 'DOCKER_REGISTRY', defaultValue: '', description: 'The place where docker images are published.'),
     text(name: 'PROJECT_YAML', defaultValue: '', description: 'Override the project vars used to generate documentation')
