@@ -30,7 +30,7 @@ def load_vars():
 
 
 def check_environment(project_vars):
-    if not getcwd().endswith("mkdocs-site"):
+    if not getcwd().endswith("docs-builder"):
         exit_msg("Run this file from the project root, mkdocs-site/", 1)
 
     if not exists(project_vars["working_directory"]):

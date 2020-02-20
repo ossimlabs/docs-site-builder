@@ -1,4 +1,5 @@
 import yaml
+import sys
 import os
 from lib import *
 
@@ -11,7 +12,7 @@ def main(doc_vars_file):
 
     clone_location = doc_vars["working_directory"]
 
-    if not os.getcwd().endswith("mkdocs-site"):
+    if not os.getcwd().endswith("docs-builder"):
         exit_msg("Run this file from the project root, mkdocs-site/", 1)
 
     if clone_location in ["docker", "template_files", "tasks", ".", os.getcwd()]:
@@ -31,6 +32,8 @@ def main(doc_vars_file):
     for url, branch in all_git_urls:
         print("Git: ", end='')
         os.system(f"git clone {url} --branch {branch}")
+        sys.stdout.flush()
+        sys.stderr.flush()
 
 
 if __name__ == "__main__":
