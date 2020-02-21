@@ -1,5 +1,4 @@
 import yaml
-import sys
 import os
 from lib import *
 
@@ -13,19 +12,20 @@ def main(doc_vars_file):
     clone_location = doc_vars["working_directory"]
 
     if not os.getcwd().endswith("docs-builder"):
-        exit_msg("Run this file from the project root, mkdocs-site/", 1)
+        raise Exception("Run this file from the project root, mkdocs-site/", 1)
 
     if clone_location in ["docker", "template_files", "tasks", ".", os.getcwd()]:
-        exit_msg("Bad working_directory! That folder is already used by this project.", 1)
+        raise Exception("Bad working_directory! That folder is already used by this project.", 1)
 
     if clone_location == "":
-        exit_msg("The working_directory variable cannot be empty.", 1)
+        raise Exception("The working_directory variable cannot be empty.", 1)
 
     if not (exists(clone_location)):
         os.mkdir(clone_location)
     elif len(os.listdir(clone_location)) > 0:
         print("This folder is not empty! The git clone command may complain.")
 
+    lastdir = os.getcwd()
     os.chdir(clone_location)
     print(f"Attempting to clone repositories into {os.getcwd()}...\n\n")
 
@@ -35,7 +35,8 @@ def main(doc_vars_file):
         sys.stdout.flush()
         sys.stderr.flush()
 
+    os.chdir(lastdir)
+
 
 if __name__ == "__main__":
-    parsed_args = parse_args()
-    main(parsed_args.config)
+    main(parse_args().config)

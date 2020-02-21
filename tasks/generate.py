@@ -1,4 +1,4 @@
-from os import getcwd, listdir, system
+from os import getcwd, listdir
 from os.path import isdir, isfile
 import yaml
 from pathlib import Path
@@ -7,8 +7,7 @@ from lib import *
 import mkdocs.__main__
 
 
-def main():
-    project_vars = load_vars()
+def main(project_vars):
     check_environment(project_vars)
     generated_guides = make_generated_guides(project_vars)
     create_main_page(project_vars, generated_guides)
@@ -16,9 +15,11 @@ def main():
     build()
 
 
-def load_vars():
-    parsed_args = parse_args()
-    project_vars = yaml.load(open(parsed_args.config, 'r'), Loader=yaml.FullLoader)
+def load_vars(parsed_args):
+    config_file = open(parsed_args.config, 'r')
+    project_vars = yaml.load(config_file, Loader=yaml.FullLoader)
+    config_file.close()
+
     project_vars["mainpage_filename"] = "index.md"
 
     all_modules = {m["name"]: m for repo in project_vars["repos"]
@@ -31,13 +32,13 @@ def load_vars():
 
 def check_environment(project_vars):
     if not getcwd().endswith("docs-builder"):
-        exit_msg("Run this file from the project root, mkdocs-site/", 1)
+        raise Exception(f"PWD is '{getcwd()}'. Run this file from the project root, docs-builder/", 1)
 
     if not exists(project_vars["working_directory"]):
-        exit_msg("Working directory not found... Have you run clone_repos.py?", 1)
+        raise Exception("Working directory not found... Have you run clone_repos.py?", 1)
 
     if len(listdir(project_vars["working_directory"])) == 0:
-        exit_msg("Working directory is empty... Have you run clone_repos.py?", 1)
+        raise Exception("Working directory is empty... Have you run clone_repos.py?", 1)
         
 
 def create_main_page(project_vars, guide_files):
@@ -58,7 +59,6 @@ def create_main_page(project_vars, guide_files):
 
 
 def make_generated_guides(project_vars):
-
     guide_files = {}
 
     for module_name, module_obj in project_vars["all_modules"].items():
@@ -113,4 +113,4 @@ def build():
 
 
 if __name__ == "__main__":
-    main()
+    main(load_vars(parse_args()))
