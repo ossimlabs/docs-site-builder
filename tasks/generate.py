@@ -4,7 +4,10 @@ from os.path import isdir, isfile
 import yaml
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader, select_autoescape
-from .lib import *
+try:
+    from .lib import *
+except ImportError:
+    from lib import *
 
 
 def main(project_vars):

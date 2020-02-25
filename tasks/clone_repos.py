@@ -1,6 +1,10 @@
 import yaml
 import os
-from .lib import *
+import sys
+try:
+    from .lib import *
+except ImportError:
+    from lib import *
 
 
 def main(doc_vars_file):
