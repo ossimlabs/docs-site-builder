@@ -7,7 +7,7 @@ project_description: "
 "
 
 # Used as a staging area for cloning repositories and creating guides
-working_directory: repos/
+working_directory: __repos/
 
 # Where to check, in each module root, for documentation files
 docs_locations:

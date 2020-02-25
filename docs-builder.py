@@ -42,27 +42,39 @@ class BuilderCLI:
         tasks.clone_repos.main(self.args.config)
 
     def generate(self):
-        if not exists(self.doc_vars["working_directory"]):
+        wd = self.doc_vars["working_directory"]
+        if not exists(wd):
             self.clone()
         tasks.generate.main(tasks.generate.load_vars(self.args))
 
     def serve(self):
         if not exists("site"):
             self.generate()
-        subprocess.call("python3 -m http.server -d site/".split())
+        try:
+            subprocess.call("python3 -m http.server -d site/".split())
+        except KeyboardInterrupt:
+            print("Stopping web server....")
+
+    def clean(self):
+        print("Cleaning up....")
+        subprocess.call(["rm", "-rf", self.doc_vars['working_directory'], "site"])
 
 
 def main():
     args = parse_args()
 
     cli = BuilderCLI(args)
-
-    if "clone" in args.tasks:
-        cli.clone()
-    if "generate" in args.tasks:
-        cli.generate()
-    if "serve" in args.tasks:
-        cli.serve()
+    for task in args.tasks:
+        try:
+            if task == "clone":
+                cli.clone()
+            if task == "generate":
+                cli.generate()
+            if task == "serve":
+                cli.serve()
+        finally:
+            if task == "clean":
+                cli.clean()
 
 
 if __name__ == "__main__":

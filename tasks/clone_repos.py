@@ -1,6 +1,6 @@
 import yaml
 import os
-from lib import *
+from tasks.lib import *
 
 
 def main(doc_vars_file):
@@ -31,6 +31,7 @@ def main(doc_vars_file):
 
     for url, branch in all_git_urls:
         print("Git: ", end='')
+        sys.stdout.flush()
         os.system(f"git clone {url} --branch {branch}")
         sys.stdout.flush()
         sys.stderr.flush()

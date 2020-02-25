@@ -1,9 +1,10 @@
+import subprocess
 from os import getcwd, listdir
 from os.path import isdir, isfile
 import yaml
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader, select_autoescape
-from lib import *
+from tasks.lib import *
 import mkdocs.__main__
 
 
@@ -12,7 +13,7 @@ def main(project_vars):
     generated_guides = make_generated_guides(project_vars)
     create_main_page(project_vars, generated_guides)
     create_mkdocs_config(project_vars, generated_guides)
-    build()
+    mkdocs_build()
 
 
 def load_vars(parsed_args):
@@ -107,9 +108,16 @@ def create_mkdocs_config(project_vars, generated_guides):
     mkdocs_config.close()
 
 
-def build():
+def mkdocs_build():
     sys.argv = ["mkdocs", "build"]
-    mkdocs.__main__.cli()
+    try:
+        subprocess.call(["mkdocs", "build"])
+    except Exception as e:
+        print("--- Exception ---")
+        print(e)
+        print("---    End    ---")
+    except:
+        print("Oh well...")
 
 
 if __name__ == "__main__":

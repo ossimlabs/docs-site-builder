@@ -56,7 +56,7 @@ docker run -d -p 8080:80 docs-service
 
 And your docsite should be available at [http://127.0.0.1:8080/](http://127.0.0.1:8080/)
 
-## Example Project vas
+## Example Project
 
 The following is an example which builds a docsite for a project named 'KTIS'. It contains 4 repositories with the
 microservices repository containing around 50 modules. Usually, the specified modules are microservices.
