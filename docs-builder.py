@@ -2,9 +2,7 @@
 
 from os.path import exists
 import argparse
-import tasks.clone_repos
-import tasks.generate
-import os
+import tasks
 import yaml
 import subprocess
 from pathlib import Path

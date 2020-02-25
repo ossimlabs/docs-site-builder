@@ -4,8 +4,7 @@ from os.path import isdir, isfile
 import yaml
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader, select_autoescape
-from tasks.lib import *
-import mkdocs.__main__
+from .lib import *
 
 
 def main(project_vars):

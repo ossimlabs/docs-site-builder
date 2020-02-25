@@ -1,6 +1,5 @@
 import argparse
 from os.path import exists
-import sys
 
 
 def parse_args():
