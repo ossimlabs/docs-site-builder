@@ -12,7 +12,7 @@ then
 fi
 
 mkdir out
-docker run -it --rm -v "$PWD"/../ktis-docs/ktis_vars.yml:/mkdocs-site/project_vars.yml -v "$PWD"/out/:/out -v ~/.ssh:/root/.ssh/ site-builder "$@"
+docker run -it --rm -v "$PWD"/../ktis-docs/ktis_vars.yml:/docs-builder/project_vars.yml -v "$PWD"/out/:/out -v ~/.ssh:/root/.ssh/ site-builder "$@"
 
 mv out/site/ docker/docs-service/site/
 docker build docker/docs-service -t docs-service
