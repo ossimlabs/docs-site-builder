@@ -34,7 +34,7 @@ cd site
 python3 -m http.server
 ```
 
-And your docsite should be available at http://127.0.0.1:8080/
+And your docsite should be available at [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
 
 ## Running in Docker
 
