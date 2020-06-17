@@ -27,8 +27,8 @@ podTemplate(
       ttyEnabled: true,
     ),
     containerTemplate(
-        name: 'ktis-doc-builder',
-        image: "${DOCKER_REGISTRY}/ktis-doc-builder:latest",
+        name: 'docs-site-builder',
+        image: "${DOCKER_REGISTRY}/docs-site-builder:latest",
         command: 'cat',
         ttyEnabled: true,
         envVars: [
@@ -37,51 +37,32 @@ podTemplate(
     )
   ],
   volumes: [
-    secretVolume(
-      mountPath: '/secrets',
-      secretName: 'ca-cert'
-    ),
     hostPathVolume(
       hostPath: '/var/run/docker.sock',
       mountPath: '/var/run/docker.sock'
-    ),
-    secretVolume(
-      mountPath: '/bitbucket_secret',
-      secretName: 'ktis-bitbucket-ssh-private-key',
-      defaultMode: '384'
     )
   ]
 ) {
   node(POD_LABEL) {
-    stage('Config SSH') {
-      container('ktis-doc-builder') {
-        sh '''
-          mkdir /root/.ssh
-          cp -H /bitbucket_secret/ssh-privatekey /root/.ssh/id_rsa
-          echo "Host *" > /root/.ssh/config
-          echo "    StrictHostKeyChecking=no" >> /root/.ssh/config
-        '''
-      }
-    }
 
     stage('Clone Repos') {
-        container('ktis-doc-builder') {
+        container('docs-site-builder') {
           if (ADHOC_PROJECT_YAML == '') {
             checkout(scm)
-            sh 'cp ./ktis_vars.yml /mkdocs-site/local_vars.yml'
+            sh 'cp ./project_vars.yml /mkdocs-site/project_vars.yml'
             
           } else {
-            sh 'echo "${ADHOC_PROJECT_YAML}" > /mkdocs-site/local_vars.yml'
+            sh 'echo "${ADHOC_PROJECT_YAML}" > /mkdocs-site/project_vars.yml'
           }
           sh '''
             cd /mkdocs-site
-            python3 tasks/clone_repos.py -c local_vars.yml
+            python3 tasks/clone_repos.py -c project_vars.yml
           '''
         }
     }
 
     stage('Build site') {
-      container('ktis-doc-builder') {
+      container('docs-site-builder') {
       sh '''
         cd /mkdocs-site
         python3 tasks/generate.py -c local_vars.yml

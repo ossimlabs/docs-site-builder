@@ -39,13 +39,13 @@ And your docsite should be available at [http://127.0.0.1:8000/](http://127.0.0.
 ## Running in Docker
 
 Also included in this project are two Dockerfiles which create docker containers to do all the lifting. The first, 
-site-builder runs the two python tasks, clone-repos and generate. The second, docs-service, serves the generated site 
-directory.
+docs-site-builder runs the two python tasks, clone-repos and generate. The second, docs-service, serves the generated 
+site directory.
 
 From the root of this project, you could run:
 
 ```bash
-docker build docker/site-builder -t site-builder
+docker build docker/docs-site-builder -t docs-site-builder
 
 mkdir out
 docker run -it --rm -v $PWD/my_vars.yml:/mkdocs-site/project_vars.yml -v $PWD/out/:/out -v ~/.ssh:/root/.ssh/ site-builder
