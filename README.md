@@ -34,6 +34,8 @@ cd site
 python3 -m http.server
 ```
 
+And your docsite should be available at http://127.0.0.1:8080/
+
 ## Running in Docker
 
 Also included in this project are two Dockerfiles which create docker containers to do all the lifting. The first, 
