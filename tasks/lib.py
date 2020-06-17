@@ -3,7 +3,7 @@ from os.path import exists
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description='Building doc sites for any project(s).', prog="Docs-Builder")
+    parser = argparse.ArgumentParser(description='Building doc sites for any project(s).', prog="docs-site-builder")
 
     parser.add_argument('--config', '-c', metavar='filename', type=str, nargs='?',
                         default='project_vars.yml',

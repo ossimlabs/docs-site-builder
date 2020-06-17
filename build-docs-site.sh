@@ -2,7 +2,7 @@
 
 check_docker_installed() {
   command -v docker >> /dev/null
-  if [ "$?" == "1" ]
+  if [[ "$?" == "1" ]]
   then
     echo "This script requires docker."
     exit 1
@@ -18,7 +18,7 @@ build_image_created() {
 help() {
   echo
   echo "Generate and/or serve a doc site given a yaml configuration file. See the README for config options."
-  echo "  Usage: ./docs-builder.sh [config file] [tasks...]"
+  echo "  Usage: ./docs-site-builder.sh [config file] [tasks...]"
   echo
   echo " Tasks"
   echo "   generate   Create the site directory"
@@ -40,7 +40,7 @@ check_args() {
     help 0
   fi
 
-  if [ ! -f "$1" ]
+  if [[ ! -f "$1" ]]
   then
     echo "$1 is not a regular file."
     help 1
@@ -86,9 +86,9 @@ then
   fi
 
   mkdir __out
-  docker run -it --rm -v "$PWD"/"$CONFIG_FILE":/docs-builder/project_vars.yml -v "$PWD"/__out/:/out -v ~/.ssh:/root/.ssh/ --name site-builder site-builder
+  docker run -it --rm -v "$PWD"/"$CONFIG_FILE":/docs-site-builder/project_vars.yml -v "$PWD"/__out/:/out -v ~/.ssh:/root/.ssh/ --name site-builder site-builder
 
-  if [ ! -f "__out/site" ]
+  if [[ ! -d "__out/site" ]]
   then
     echo "Generation failed."
     exit 1
@@ -96,7 +96,7 @@ then
 
   if [[ "$SERVE" != 1 ]]
   then
-    cp __out/site/ site/
+    cp -r __out/site/ site/
   fi
 fi
 

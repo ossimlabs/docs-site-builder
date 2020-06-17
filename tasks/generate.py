@@ -35,8 +35,8 @@ def load_vars(parsed_args):
 
 
 def check_environment(project_vars):
-    if not getcwd().endswith("docs-builder"):
-        raise Exception(f"PWD is '{getcwd()}'. Run this file from the project root, docs-builder/", 1)
+    if not getcwd().endswith("docs-site-builder"):
+        raise Exception(f"PWD is '{getcwd()}'. Run this file from the project root, docs-site-builder/", 1)
 
     if not exists(project_vars["working_directory"]):
         raise Exception("Working directory not found... Have you run clone_repos.py?", 1)

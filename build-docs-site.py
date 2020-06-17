@@ -9,7 +9,7 @@ from pathlib import Path
 
 
 def parse_args():
-    parser = argparse.ArgumentParser(description='Building doc sites for any project(s).', prog="Docs-Builder")
+    parser = argparse.ArgumentParser(description='Building doc sites for any project(s).', prog="docs-site-builder")
 
     parser.add_argument('tasks', metavar='task', type=str, nargs='+',
                         help='tasks to perform (clone, generate, serve)')

@@ -15,7 +15,7 @@ def main(doc_vars_file):
 
     clone_location = doc_vars["working_directory"]
 
-    if not os.getcwd().endswith("docs-builder"):
+    if not os.getcwd().endswith("docs-site-builder"):
         raise Exception("Run this file from the project root, mkdocs-site/", 1)
 
     if clone_location in ["docker", "template_files", "tasks", ".", os.getcwd()]:
