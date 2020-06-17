@@ -48,7 +48,7 @@ From the root of this project, you could run:
 docker build docker/docs-site-builder -t docs-site-builder
 
 mkdir out
-docker run -it --rm -v $PWD/my_vars.yml:/mkdocs-site/project_vars.yml -v $PWD/out/:/out docs-site-builder
+docker run -it --rm -v $PWD/my_vars.yml:/docs-site-builder/project_vars.yml -v $PWD/out/:/out docs-site-builder
 
 mv out/site/ docker/docs-service/site/
 docker build docker/docs-service -t docs-service
