@@ -27,9 +27,9 @@ the repositories and generate the docsite. Since you have python installed you c
 http.server` to serve the site locally.
 
 ```bash
-pip3 -r requirements.txt
-python3 tasks/clone_repos.py
-python3 generate.py
+pip3 install -r requirements.txt
+python3 tasks/clone_repos.py -c project_vars.yml
+python3 tasks/generate.py -c project_vars.yml
 cd site
 python3 -m http.server
 ```
@@ -48,7 +48,7 @@ From the root of this project, you could run:
 docker build docker/docs-site-builder -t docs-site-builder
 
 mkdir out
-docker run -it --rm -v $PWD/my_vars.yml:/mkdocs-site/project_vars.yml -v $PWD/out/:/out -v ~/.ssh:/root/.ssh/ site-builder
+docker run -it --rm -v $PWD/my_vars.yml:/mkdocs-site/project_vars.yml -v $PWD/out/:/out docs-site-builder
 
 mv out/site/ docker/docs-service/site/
 docker build docker/docs-service -t docs-service
