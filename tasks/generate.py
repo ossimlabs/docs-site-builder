@@ -43,6 +43,16 @@ def check_environment(project_vars):
 
     if len(listdir(project_vars["working_directory"])) == 0:
         raise Exception("Working directory is empty... Have you run clone_repos.py?", 1)
+
+    for repo_index, repo in enumerate(project_vars['repos']):
+        for module_index, module in enumerate(repo['modules']):
+            if 'links' in module:
+                if type(module['links']) != dict:
+                    raise Exception(f"I expected a dictionary of links, " +
+                                    f"repos.{repo_index}.{module['name']}.{module_index}.links has a " +
+                                    f"{type(module['links'])}.", 1)
+
+
         
 
 def create_main_page(project_vars, guide_files):

@@ -11,6 +11,9 @@ def main(doc_vars_file):
     print('\n')
     doc_vars = yaml.load(open(doc_vars_file, 'r'), Loader=yaml.FullLoader)
 
+    if "repos" not in doc_vars or type(doc_vars["repos"]) != list:
+        raise Exception(f"Couldn't find a list of repos under in {doc_vars_file}. I can't do anything.", 1)
+
     all_git_urls = [(x["git_url"], x["branch"]) for x in doc_vars["repos"]]
 
     clone_location = doc_vars["working_directory"]
