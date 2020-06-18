@@ -1,14 +1,15 @@
 import subprocess
 import sys
+import string
 from os import getcwd, listdir
-from os.path import isdir, isfile
+from os.path import isdir, isfile, exists
 import yaml
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 try:
-    from .lib import *
+    from .lib import parse_args
 except ImportError:
-    from lib import *
+    from lib import parse_args
 
 
 def main(project_vars):
@@ -53,8 +54,6 @@ def check_environment(project_vars):
                                     f"{type(module['links'])}.", 1)
 
 
-        
-
 def create_main_page(project_vars, guide_files):
     env = Environment(
         loader=FileSystemLoader("template_files"),
@@ -77,14 +76,15 @@ def make_generated_guides(project_vars):
 
     for module_name, module_obj in project_vars["all_modules"].items():
         guide = f"# {module_name} Docs\n"
-        for doc_location_local in project_vars["docs_locations"]:
-            doc_location = Path(project_vars["working_directory"], module_obj["path"], doc_location_local)
-            if exists(doc_location):
-                if isdir(doc_location):
-                    for file in filter(isfile, listdir(doc_location)):
-                        guide += read_docfile(Path(doc_location, file), Path(doc_location_local, file))
+        for sought_doc_filename in project_vars["docs_locations"]:
+            sought_doc_dir = Path(project_vars["working_directory"], module_obj["path"])
+            if exists_case_insensitive(sought_doc_dir, sought_doc_filename):
+                real_doc_path = get_real_path(sought_doc_dir, sought_doc_filename)
+                if isdir(sought_doc_dir):
+                    for file in filter(isfile, listdir(sought_doc_dir)):
+                        guide += read_docfile(file, sought_doc_filename)
                 else:
-                    guide += read_docfile(doc_location, doc_location_local)
+                    guide += read_docfile(real_doc_path, sought_doc_filename)
 
         guide_filename = f"{module_name.replace(' ', '-')}-guide.md"
         guide_files[module_name] = guide_filename
@@ -93,6 +93,20 @@ def make_generated_guides(project_vars):
         guide_file.close()
 
     return guide_files
+
+
+def exists_case_insensitive(some_path, fuzzy_filename):
+    for file in listdir(some_path):
+        if file.lower() == fuzzy_filename.lower():
+            return True
+    return False
+
+
+def get_real_path(some_path, fuzzy_filename):
+    for file in listdir(some_path):
+        if file.lower() == fuzzy_filename.lower():
+            return file
+    raise Exception(f"get_real_path(): I couldn't find {fuzzy_filename} in {some_path} even though I should have.")
 
 
 def read_docfile(doc_location, doc_location_local):
