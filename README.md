@@ -1,4 +1,4 @@
-# Generic Mkdocs Site Builder
+# Generic Docs Site Builder using MkDocs
 
 This tool uses one project_vars.yml file to specify all the notable modules in a multi-repository project to aggregate 
 doc pages into one docsite. This site, once deployed in your cluster, can support users and developers of the project.
