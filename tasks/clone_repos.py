@@ -1,5 +1,4 @@
 import yaml
-import os
 import sys
 try:
     from .lib import *
@@ -11,21 +10,11 @@ def main(doc_vars_file):
     print('\n')
     doc_vars = yaml.load(open(doc_vars_file, 'r'), Loader=yaml.FullLoader)
 
-    if "repos" not in doc_vars or type(doc_vars["repos"]) != list:
-        raise Exception(f"Couldn't find a list of repos under in {doc_vars_file}. I can't do anything.", 1)
+    check_project_vars(doc_vars, doc_vars_file)
 
     all_git_urls = [(x["git_url"], x["branch"]) for x in doc_vars["repos"]]
 
     clone_location = doc_vars["working_directory"]
-
-    if not os.getcwd().endswith("docs-site-builder"):
-        raise Exception("Run this file from the project root, mkdocs-site/", 1)
-
-    if clone_location in ["docker", "template_files", "tasks", ".", os.getcwd()]:
-        raise Exception("Bad working_directory! That folder is already used by this project.", 1)
-
-    if clone_location == "":
-        raise Exception("The working_directory variable cannot be empty.", 1)
 
     if not (exists(clone_location)):
         os.mkdir(clone_location)
