@@ -1,5 +1,6 @@
 import yaml
 import sys
+from os.path import exists
 try:
     from .lib import *
 except ImportError:
@@ -26,7 +27,7 @@ def main(doc_vars_file):
     print(f"Attempting to clone repositories into {os.getcwd()}...\n\n")
 
     for url, branch in all_git_urls:
-        print("Git: ", end='')
+        print("Git subprocess: ", end='')
         sys.stdout.flush()
         os.system(f"git clone {url} --branch {branch}")
         sys.stdout.flush()
