@@ -1,6 +1,6 @@
 import subprocess
 import sys
-import string
+import re
 from os import getcwd, listdir
 from os.path import isdir, isfile, exists
 import yaml
@@ -37,21 +37,28 @@ def load_vars(parsed_args):
 
 def check_environment(project_vars):
     if not getcwd().endswith("docs-site-builder"):
-        raise Exception(f"PWD is '{getcwd()}'. Run this file from the project root, docs-site-builder/", 1)
+        print(f"PWD is '{getcwd()}'. Run this file from the project root, docs-site-builder/", file=sys.stderr)
+        exit(1)
 
     if not exists(project_vars["working_directory"]):
-        raise Exception("Working directory not found... Have you run clone_repos.py?", 1)
+        print("Working directory not found... Have you run clone_repos.py?", file=sys.stderr)
+        exit(1)
 
     if len(listdir(project_vars["working_directory"])) == 0:
-        raise Exception("Working directory is empty... Have you run clone_repos.py?", 1)
+        print("Working directory is empty... Have you run clone_repos.py?", file=sys.stderr)
+        exit(1)
+
+    bad_syntax = False
 
     for repo_index, repo in enumerate(project_vars['repos']):
         for module_index, module in enumerate(repo['modules']):
             if 'links' in module:
                 if type(module['links']) != dict:
-                    raise Exception(f"I expected a dictionary of links, " +
-                                    f"repos.{repo_index}.{module['name']}.{module_index}.links has a " +
-                                    f"{type(module['links'])}.", 1)
+                    print(f"I expected a dictionary of links, repos.{repo_index}.{module['name']}.{module_index}.links has a {type(module['links'])}.", file=sys.stderr)
+                    bad_syntax = True
+
+    if bad_syntax:
+        exit(1)
 
 
 def create_main_page(project_vars, guide_files):
@@ -76,15 +83,16 @@ def make_generated_guides(project_vars):
 
     for module_name, module_obj in project_vars["all_modules"].items():
         guide = f"# {module_name} Docs\n"
-        for sought_doc_filename in project_vars["docs_locations"]:
-            sought_doc_dir = Path(project_vars["working_directory"], module_obj["path"])
-            if exists_case_insensitive(sought_doc_dir, sought_doc_filename):
-                real_doc_path = get_real_path(sought_doc_dir, sought_doc_filename)
-                if isdir(sought_doc_dir):
-                    for file in filter(isfile, listdir(sought_doc_dir)):
-                        guide += read_docfile(file, sought_doc_filename)
+        module_root = Path(project_vars["working_directory"], module_obj["path"])
+        for sought_doc_file_or_dir in project_vars["docs_locations"]:
+            if exists_case_insensitive(module_root, sought_doc_file_or_dir):
+                existing_doc_file_or_dir = get_real_path(module_root, sought_doc_file_or_dir)
+                if isdir(existing_doc_file_or_dir):
+                    doc_folder = existing_doc_file_or_dir
+                    for doc_file in filter(lambda x: isfile(Path(doc_folder, x)), listdir(doc_folder)):
+                        guide += read_docfile(Path(doc_folder, doc_file), sought_doc_file_or_dir)
                 else:
-                    guide += read_docfile(real_doc_path, sought_doc_filename)
+                    guide += read_docfile(existing_doc_file_or_dir, sought_doc_file_or_dir)
 
         guide_filename = f"{module_name.replace(' ', '-')}-guide.md"
         guide_files[module_name] = guide_filename
@@ -95,28 +103,46 @@ def make_generated_guides(project_vars):
     return guide_files
 
 
-def exists_case_insensitive(some_path, fuzzy_filename):
-    for file in listdir(some_path):
-        if file.lower() == fuzzy_filename.lower():
+def exists_case_insensitive(parent_dir, fuzzy_name):
+    if len(Path(fuzzy_name).parts) > 1:
+        return exists_case_insensitive(parent_dir, Path(fuzzy_name).parent) \
+               and exists_case_insensitive(Path(parent_dir, Path(fuzzy_name).parent), Path(fuzzy_name).name)
+
+    for child_file_or_dir in listdir(parent_dir):
+        if str(Path(child_file_or_dir)).lower() == str(Path(fuzzy_name)).lower():
             return True
+
     return False
 
 
-def get_real_path(some_path, fuzzy_filename):
-    for file in listdir(some_path):
-        if file.lower() == fuzzy_filename.lower():
-            return file
-    raise Exception(f"get_real_path(): I couldn't find {fuzzy_filename} in {some_path} even though I should have.")
+def get_real_path(parent_dir, fuzzy_name):
+    if len(Path(fuzzy_name).parts) > 1:
+        direct_parent = get_real_path(parent_dir, Path(fuzzy_name).parent)
+        return get_real_path(direct_parent, Path(fuzzy_name).name)
+
+    for child_file_or_dir in listdir(parent_dir):
+        if str(Path(child_file_or_dir)).lower() == str(Path(fuzzy_name)).lower():
+            return Path(parent_dir, child_file_or_dir)
+    print(f"get_real_path(): I couldn't find {fuzzy_name} in {parent_dir} even though I should have.", file=sys.stderr)
+    exit(1)
 
 
-def read_docfile(doc_location, doc_location_local):
-    subsection = f"## {doc_location_local}\n\n"
-    docfile = open(doc_location, "r")
-    if str(doc_location).endswith(".md"):
-        subsection += docfile.read() + "\n\n"
-    else:
-        subsection += f"```\n{docfile.read()}\n```\n"
-    docfile.close()
+def read_docfile(doc_file, doc_title):
+    subsection = f"## {doc_title}\n\n"
+    with open(doc_file, "r") as opened_doc_file:
+        if str(doc_file).endswith(".md"):
+            raw_markdown = opened_doc_file.read()
+            fixed_backticks = re.sub('([^\n])```', r'\1\n```', raw_markdown)
+            formatted_markdown = fixed_backticks + '\n\n'
+            subsection += formatted_markdown
+        else:
+            try:
+                raw_doc = opened_doc_file.read()
+                stripped_backticks = raw_doc.replace('`', '')
+                formatted_doc = f"```\n{stripped_backticks}\n```\n"
+                subsection += formatted_doc
+            except UnicodeDecodeError as e:
+                print(f"Skipping unreadable file {doc_file}....")
     return subsection
 
 

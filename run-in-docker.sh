@@ -20,64 +20,89 @@ help() {
   echo "Generate and/or serve a doc site given a yaml configuration file. See the README for config options."
   echo "  Usage: ./docs-site-builder.sh [config file] [tasks...]"
   echo
-  echo " Tasks"
-  echo "   generate   Create the site directory"
-  echo "   serve      Create the webserver"
-  echo "   clean      Remove all cached resources"
+  echo " Options"
+  echo "  -h, --help    Display this help page"
+  echo "  -c, --config  Specify the config file (Required for the tasks: generate, serve)."
+  echo
+  echo " Tasks (At least one task must be specified)"
+  echo "   generate     Create the site directory"
+  echo "   serve        Create the webserver"
+  echo "   clean        Remove all cached resources"
   echo
   exit "$1"
 }
 
 check_args() {
-  if [[ $1 == "" ]]
-  then
-    echo "You must specify a config file!"
-    help 1
-  fi
 
-  if [[ $1 == "-h" || $1 == "--help" ]]
-  then
-    help 0
-  fi
+  PARAMS=""
+  while (( "$#" )); do
+    case "$1" in
+      -h|--help)
+            help 0
+            ;;
+      -c|--config)
+        if [ -n "$2" ] && [ "${2:0:1}" != "-" ]; then
+          CONFIG_FILE=$2
+          shift 2
+        else
+          echo "Error: Argument for $1 is missing" >&2
+          exit 1
+        fi
+        ;;
+      -*=) # unsupported flags
+        echo "Error: Unsupported flag $1" >&2
+        exit 1
+        ;;
+      *) # preserve positional arguments
+        PARAMS="$PARAMS $1"
+        shift
+        ;;
+    esac
+  done
 
-  if [[ ! -f "$1" ]]
-  then
-    echo "$1 is not a regular file."
-    help 1
-  fi
+  check_positional_args $PARAMS
+}
 
-  CONFIG_FILE=$1
-
-  if [[ $# == 1 ]]
-  then
-    echo "No tasks specified"
-    help 1
-  fi
-
-  shift
-
+check_positional_args() {
   while test $# -gt 0
   do
     case "$1" in
-        generate) GENERATE=1
-            ;;
-        serve) SERVE=1
-            ;;
-        clean) CLEAN=1
-            ;;
-        *) echo "I don't recongnize task '$1'."
-           help 1
-            ;;
+        generate)
+          GENERATE=1
+          ;;
+        serve)
+          GENERATE=1
+          SERVE=1
+          ;;
+        clean)
+          CLEAN=1
+          ;;
+        "") ;;
+        *)
+          echo "I don't recongnize task '$1'." >&2
+          exit 1
+          ;;
     esac
     shift
   done
+
+  if ([ -n $GENERATE ] || [ -n $SERVE ]) && [ -z CONFIG_FILE ];
+  then
+    echo "The tasks generate and server require a config file to be specified." >&2
+  fi
+
+  if [ -z $GENERATE ] && [ -z $SERVE ] && [ -z $CLEAN ];
+  then
+    echo "You must specify a task. [generate, serve, clean]" >&2
+    exit 1
+  fi
 }
 
 check_docker_installed
 
 check_args "$@"
 
-if [[ "$GENERATE" == 1 || "$SERVE" == 1 ]]
+if [[ "$GENERATE" == 1 ]]
 then
   if [[ $(build_image_created) == 1 ]]
   then
