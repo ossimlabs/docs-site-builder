@@ -33,7 +33,6 @@ podTemplate(
     stage('Copy Files') {
       container('docker') {
         sh """
-          cd docs-site-builder/
           cp -r src/ docker/builder-image/
           cp requirements.txt docker/builder-image/
         """
