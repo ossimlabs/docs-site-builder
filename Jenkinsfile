@@ -42,7 +42,7 @@ podTemplate(
     stage('Docker Build') {
       container('docker') {
         sh """
-          cd docs-site-builder/docker/builder-image
+          cd docker/builder-image
           docker build . -t ${DOCKER_REGISTRY_PUSH}/docs-site-builder:${VERSION}
         """
       }
