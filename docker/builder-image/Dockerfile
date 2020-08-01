@@ -7,8 +7,11 @@ RUN mkdir /docs-site-builder/
 COPY requirements.txt /docs-site-builder/
 COPY src/ /docs-site-builder/
 
-RUN pip3 install -r requirements.txt &&\
+RUN cd /docs-site-builder/ &&\
+    pip3 install -r requirements.txt &&\
     mkdir /out/
-CMD python3 src/tasks/clone_repos.py &&\
+
+CMD cd /docs-site-builder/ &&\
+    python3 src/tasks/clone_repos.py &&\
     python3 src/tasks/generate.py &&\
     mv site /out/site
