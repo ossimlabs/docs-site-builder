@@ -34,6 +34,7 @@ podTemplate(
       container('docker') {
         sh """
           cp -r src/ docker/builder-image/
+          cp -r docker/docs-service/ docker/builder-image/
           cp requirements.txt docker/builder-image/
         """
       }
