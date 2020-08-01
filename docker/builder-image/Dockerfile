@@ -2,8 +2,10 @@ FROM python
 
 # These steps require that the repo 'docs-site builder' is volumned into the working directory
 
-COPY requirements.txt .
-COPY src/ .
+RUN mkdir /docs-site-builder/
+
+COPY requirements.txt /docs-site-builder/
+COPY src/ /docs-site-builder/
 
 RUN pip3 install -r requirements.txt &&\
     mkdir /out/
