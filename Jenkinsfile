@@ -43,7 +43,7 @@ podTemplate(
       container('docker') {
         sh """
           cd docker/builder-image
-          docker build . -t ${DOCKER_REGISTRY_PUSH}/docs-site-builder:${VERSION}
+          docker build . --network=host -t ${DOCKER_REGISTRY_PUSH}/docs-site-builder:${VERSION}
         """
       }
     }
