@@ -2,13 +2,8 @@ properties([
   buildDiscarder(logRotator(artifactDaysToKeepStr: '', artifactNumToKeepStr: '3', daysToKeepStr: '', numToKeepStr: '20')),
   disableConcurrentBuilds(),
   parameters([
-    booleanParam(name: 'CLEAN_WORKSPACE', defaultValue: true, description: 'Clean the workspace at the end of the run'),
-    string(name: 'IMAGE_TAG', defaultValue: '', description: 'Docker image tag used when publishing'),
-    string(name: 'IMAGE_NAME', defaultValue: '', description: 'Docker image name used when publishing'),
-    string(name: 'DOCKER_REGISTRY_PULL', defaultValue: 'nexus-docker-private-group.ossim.io', description: 'Docker registry pull url.'),
-    string(name: 'DOCKER_REGISTRY_PUSH', defaultValue: 'nexus-docker-private-hosted.ossim.io', description: 'Docker registry push url.'),
-    string(name: 'HELM_UPLOAD_URL', defaultValue: 'nexus.ossim.io/repository/helm-private-hosted/', description: 'Helm repo url'),
-    text(name: 'ADHOC_PROJECT_YAML', defaultValue: '', description: 'Override the project vars used to generate documentation')
+    string(name: 'VERSION', defaultValue: 'test', description: 'Docker image tag used when publishing'),
+    string(name: 'DOCKER_REGISTRY_PUSH', defaultValue: 'nexus-docker-private-hosted.ossim.io', description: 'Docker registry push url.')
   ])
 ])
 
@@ -20,21 +15,6 @@ podTemplate(
       ttyEnabled: true,
       command: 'cat',
       privileged: true
-    ),
-    containerTemplate(
-      name: 'docs-site-builder',
-      image: "${DOCKER_REGISTRY_PULL}/docs-site-builder:latest",
-      command: 'cat',
-      ttyEnabled: true,
-      envVars: [
-        envVar(key: 'HOME', value: '/root')
-      ]
-    ),
-    containerTemplate(
-      image: "${DOCKER_REGISTRY_PULL}/alpine/helm:3.2.3",
-      name: 'helm',
-      command: 'cat',
-      ttyEnabled: true
     )
   ],
   volumes: [
@@ -45,74 +25,42 @@ podTemplate(
   ]
 ) {
   node(POD_LABEL) {
-    stage('Clone Repos') {
-      container('docs-site-builder') {
-        if (ADHOC_PROJECT_YAML == '') {
-          checkout(scm)
-          sh 'cp ./omar-vars.yml /docs-site-builder/project_vars.yml'
-
-          } else {
-            sh 'echo "${ADHOC_PROJECT_YAML}" > /docs-site-builder/project_vars.yml'
-          }
-          sh '''
-            cd /docs-site-builder
-            python3 tasks/clone_repos.py -c project_vars.yml
-          '''
-      }
+    stage("Checkout branch $BRANCH_NAME")
+    {
+      checkout(scm)
     }
 
-    stage('Build site') {
-      container('docs-site-builder') {
-      sh '''
-        cd /docs-site-builder
-        python3 tasks/generate.py -c project_vars.yml
-        cp -r site/ /home/jenkins/agent/site/
-        cp docker/docs-service/Dockerfile /home/jenkins/agent/Dockerfile
-      '''
-      }
-    }
-
-    stage('Docker build') {
+    stage('Copy Files') {
       container('docker') {
-        withDockerRegistry(credentialsId: 'dockerCredentials', url: "https://${DOCKER_REGISTRY_PUSH}") {
-          sh """
-            cd /home/jenkins/agent/
-            docker build . -t ${DOCKER_REGISTRY_PUSH}/${IMAGE_NAME}:${IMAGE_TAG}
-          """
-         }
-       }
-     }
-
-    stage('Docker push'){
-      container('docker') {
-        withDockerRegistry(credentialsId: 'dockerCredentials', url: "https://${DOCKER_REGISTRY_PUSH}") {
-          sh """
-            docker push ${DOCKER_REGISTRY_PUSH}/${IMAGE_NAME}:${IMAGE_TAG}
-          """
-        }
-      }
-    }
-
-    stage('Package chart'){
-      container('helm') {
         sh """
-          mkdir packaged-chart
-          helm package -d packaged-chart chart
+          cd docs-site-builder/
+          cp -r src/ docker/builder-image/
+          cp requirements.txt docker/builder-image/
         """
       }
     }
 
-    stage('Upload chart'){
-      container('docs-site-builder') {
-        withCredentials([usernameColonPassword(credentialsId: 'helmCredentials', variable: 'HELM_CREDENTIALS')]) {
-          sh "curl -u ${HELM_CREDENTIALS} ${HELM_UPLOAD_URL} --upload-file packaged-chart/*.tgz -v"
+    stage('Docker Build') {
+      container('docker') {
+        sh """
+          cd docs-site-builder/docker/builder-image
+          docker build . -t ${DOCKER_REGISTRY_PUSH}/docs-site-builder:${VERSION}
+        """
+      }
+    }
+
+    stage('Docker Publish') {
+      container('docker') {
+        withDockerRegistry(credentialsId: 'dockerCredentials', url: "https://${DOCKER_REGISTRY_PUSH}") {
+          sh """
+            docker push ${DOCKER_REGISTRY_PUSH}/docs-site-builder:${VERSION}
+          """
         }
       }
     }
 
-    stage("Clean Workspace"){
-      if ("${CLEAN_WORKSPACE}" == "true")
-        step([$class: 'WsCleanup'])
+    stage("Clean Workspace") {
+      step([$class: 'WsCleanup'])
     }
   }
 }
