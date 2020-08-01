@@ -2,7 +2,7 @@
 
 from os.path import exists
 import argparse
-import tasks
+from tasks import clone_repos, generate, lib
 import yaml
 import subprocess
 from pathlib import Path
@@ -37,13 +37,13 @@ class BuilderCLI:
         self.doc_vars = doc_vars
 
     def clone(self):
-        tasks.clone_repos.main(self.args.config)
+        clone_repos.main(self.args.config)
 
     def generate(self):
         wd = self.doc_vars["working_directory"]
         if not exists(wd):
             self.clone()
-        tasks.generate.main(tasks.generate.load_vars(self.args))
+        generate.main(generate.load_vars(self.args))
 
     def serve(self):
         if not exists("site"):

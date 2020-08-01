@@ -63,7 +63,7 @@ def check_environment(project_vars):
 
 def create_main_page(project_vars, guide_files):
     env = Environment(
-        loader=FileSystemLoader("template_files"),
+        loader=FileSystemLoader("src/template_files"),
         autoescape=select_autoescape(['html', 'xml'])
     )
 
