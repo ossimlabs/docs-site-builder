@@ -23,10 +23,6 @@ def check_project_vars(doc_vars, doc_vars_file):
         print(f"Couldn't find a list of repos under in {doc_vars_file}. I can't do anything.", file=sys.stderr)
         exit(1)
 
-    if not os.getcwd().endswith("docs-site-builder"):
-        print("Run this file from the project root, mkdocs-site/", file=sys.stderr)
-        exit(1)
-
     clone_location = doc_vars["working_directory"]
 
     if clone_location in ["docker", "template_files", "tasks", ".", os.getcwd()]:
