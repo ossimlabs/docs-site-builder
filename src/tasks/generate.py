@@ -88,7 +88,7 @@ def make_generated_guides(project_vars):
                 if isdir(existing_doc_file_or_dir):
                     doc_folder = existing_doc_file_or_dir
                     for doc_file in filter(lambda x: isfile(Path(doc_folder, x)), listdir(doc_folder)):
-                        guide += read_docfile(Path(doc_folder, doc_file), sought_doc_file_or_dir)
+                        guide += read_docfile(Path(doc_folder, doc_file), Path(sought_doc_file_or_dir, doc_file))
                         if doc_file.endswith(".png"):
                             copyfile(Path(doc_folder, doc_file), Path(project_vars["working_directory"], doc_file))
                 else:
@@ -128,18 +128,20 @@ def get_real_path(parent_dir, fuzzy_name):
 
 
 def read_docfile(doc_file, doc_title):
-    subsection = f"## {doc_title}\n\n"
+    subsection = ""
     with open(doc_file, "r") as opened_doc_file:
         if str(doc_file).endswith(".md"):
             raw_markdown = opened_doc_file.read()
             fixed_backticks = re.sub('([^\n])```', r'\1\n```', raw_markdown)
             formatted_markdown = fixed_backticks + '\n\n'
+            subsection += f"## {doc_title}\n\n"
             subsection += formatted_markdown
         else:
             try:
                 raw_doc = opened_doc_file.read()
                 stripped_backticks = raw_doc.replace('`', '')
                 formatted_doc = f"```\n{stripped_backticks}\n```\n"
+                subsection += f"## {doc_title}\n\n"
                 subsection += formatted_doc
             except UnicodeDecodeError as e:
                 print(f"Skipping unreadable file {doc_file}....")
