@@ -1,8 +1,9 @@
 import subprocess
 import sys
 import re
-from os import getcwd, listdir
+from os import listdir
 from os.path import isdir, isfile, exists
+from shutil import copyfile
 import yaml
 from pathlib import Path
 from jinja2 import Environment, FileSystemLoader, select_autoescape
@@ -88,6 +89,8 @@ def make_generated_guides(project_vars):
                     doc_folder = existing_doc_file_or_dir
                     for doc_file in filter(lambda x: isfile(Path(doc_folder, x)), listdir(doc_folder)):
                         guide += read_docfile(Path(doc_folder, doc_file), sought_doc_file_or_dir)
+                        if doc_file.endswith(".png"):
+                            copyfile(Path(doc_folder, doc_file), Path(project_vars["working_directory"], doc_file))
                 else:
                     guide += read_docfile(existing_doc_file_or_dir, sought_doc_file_or_dir)
 

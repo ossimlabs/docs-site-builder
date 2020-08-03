@@ -59,7 +59,7 @@ class BuilderCLI:
 
     def clean(self):
         print("Cleaning up....")
-        subprocess.call(["rm", "-rf", self.doc_vars['working_directory'], "site", "docker/docs-service/site"])
+        subprocess.call(["rm", "-rf", self.doc_vars['working_directory'], "site", "mkdocs.yml"])
 
 
 def main():
