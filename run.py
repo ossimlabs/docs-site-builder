@@ -2,10 +2,14 @@
 
 from os.path import exists
 import argparse
-from tasks import clone_repos, generate, lib
 import yaml
 import subprocess
 from pathlib import Path
+
+try:
+    from src.tasks import clone_repos, generate, lib
+except:
+    from tasks import clone_repos, generate, lib
 
 
 def parse_args():
@@ -55,7 +59,7 @@ class BuilderCLI:
 
     def clean(self):
         print("Cleaning up....")
-        subprocess.call(["rm", "-rf", self.doc_vars['working_directory'], "site"])
+        subprocess.call(["rm", "-rf", self.doc_vars['working_directory'], "site", "docker/docs-service/site"])
 
 
 def main():

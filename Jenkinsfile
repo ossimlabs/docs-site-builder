@@ -30,20 +30,19 @@ podTemplate(
       checkout(scm)
     }
 
-    stage('Copy Files') {
-      container('docker') {
-        sh """
-          cp -r src/ docker/builder-image/
-          cp -r docker/docs-service/ docker/builder-image/
-          cp requirements.txt docker/builder-image/
-        """
-      }
-    }
+//    stage('Copy Files') {
+//      container('docker') {
+//        sh """
+//          cp -r src/ docker/builder-image/
+//          cp -r docker/docs-service/ docker/builder-image/
+//          cp requirements.txt docker/builder-image/
+//        """
+//      }
+//    }
 
     stage('Docker Build') {
       container('docker') {
         sh """
-          cd docker/builder-image
           docker build . --network=host -t ${DOCKER_REGISTRY_PUSH}/docs-site-builder:${VERSION}
         """
       }
